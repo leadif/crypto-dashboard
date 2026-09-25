@@ -161,8 +161,8 @@ body{padding-bottom:calc(var(--safe-bot) + 16px)}
 
     <div class="coin-row" id="row-xrp">
       <div class="clogo" style="background:#00aae4"><svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M7 3L12 8l5-5h3l-6.5 6.5c-.83.83-2.17.83-3 0L4 3h3zm10 18l-5-5-5 5H4l6.5-6.5c.83-.83 2.17-.83 3 0L20 21h-3z"/></svg></div>
-      <div class="cinfo"><div class="cname">XRP <span class="ctag clive">⚡ live</span></div><div class="cdetail" id="det-xrp">1,138 coins · loading…</div><div class="cbar"><div class="cbar-fill" style="width:84%;background:#00aae4"></div></div></div>
-      <div class="cright"><div class="cval" id="val-xrp">—</div><div class="cchg nt" id="chg-xrp">—</div><div class="cpct">43.9% · stop $1.20</div></div>
+      <div class="cinfo"><div class="cname">XRP <span class="ctag clive">⚡ live</span></div><div class="cdetail" id="det-xrp">1,138 coins · Binance Earn 💰 long hold</div><div class="cbar"><div class="cbar-fill" style="width:84%;background:#00aae4"></div></div></div>
+      <div class="cright"><div class="cval" id="val-xrp">—</div><div class="cchg nt" id="chg-xrp">—</div><div class="cpct">43.9% · Earn · no sell target</div></div>
     </div>
 
     <div class="coin-row" id="row-btc">
@@ -235,7 +235,7 @@ body{padding-bottom:calc(var(--safe-bot) + 16px)}
   <div style="display:flex;flex-direction:column;gap:12px">
     <div class="panel">
       <div class="panel-header"><span class="panel-title">Target Tracker</span><span class="panel-badge green">Active</span></div>
-      <div class="target-row"><div class="target-coin">XRP</div><div class="target-track"><div class="target-fill" style="width:88%;background:linear-gradient(90deg,#00aae4,#00C9FF)"><div class="target-tip" style="background:#00C9FF"></div></div></div><div class="target-info"><div class="target-pct up">88%</div><div class="target-label">to $1.60</div></div></div>
+
       <div class="target-row"><div class="target-coin">ADA</div><div class="target-track"><div class="target-fill" style="width:72%;background:linear-gradient(90deg,#0033AD,#4A6FE3)"><div class="target-tip" style="background:#4A6FE3"></div></div></div><div class="target-info"><div class="target-pct up">72%</div><div class="target-label">to $0.263</div></div></div>
       <div class="target-row"><div class="target-coin">KITE</div><div class="target-track"><div class="target-fill" style="width:68%;background:linear-gradient(90deg,#FF6B2B,#FFB800)"><div class="target-tip" style="background:#FFB800"></div></div></div><div class="target-info"><div class="target-pct" style="color:var(--yellow)">68%</div><div class="target-label">to $0.145</div></div></div>
       <div class="target-row"><div class="target-coin">DOGE</div><div class="target-track"><div class="target-fill" style="width:59%;background:linear-gradient(90deg,#C2A633,#FFD700)"><div class="target-tip" style="background:#FFD700"></div></div></div><div class="target-info"><div class="target-pct" style="color:var(--yellow)">59%</div><div class="target-label">to $0.115</div></div></div>
@@ -246,7 +246,7 @@ body{padding-bottom:calc(var(--safe-bot) + 16px)}
     <div class="panel">
       <div class="panel-header"><span class="panel-title">Stop Losses</span><span class="panel-badge">Protected</span></div>
       <div style="padding:12px 18px;display:flex;flex-direction:column;gap:10px">
-        <div class="sl-row"><span style="color:var(--text2);width:50px">XRP</span><div style="display:flex;align-items:center;gap:8px;flex:1;justify-content:flex-end"><span style="color:var(--text2);font-family:var(--mono);font-size:12px">$1.20</span><div class="sl-bar"><div class="sl-fill" style="width:25%;background:var(--green)"></div></div><span style="color:var(--green);font-size:11px;width:50px">Safe ✓</span></div></div>
+
         <div class="sl-row"><span style="color:var(--text2);width:50px">KITE</span><div style="display:flex;align-items:center;gap:8px;flex:1;justify-content:flex-end"><span style="color:var(--text2);font-family:var(--mono);font-size:12px">$0.130</span><div class="sl-bar"><div class="sl-fill" style="width:85%;background:var(--yellow)"></div></div><span style="color:var(--yellow);font-size:11px;width:50px">Watch ⚠</span></div></div>
         <div class="sl-row"><span style="color:var(--text2);width:50px">DOGE</span><div style="display:flex;align-items:center;gap:8px;flex:1;justify-content:flex-end"><span style="color:var(--text2);font-family:var(--mono);font-size:12px">$0.088</span><div class="sl-bar"><div class="sl-fill" style="width:40%;background:var(--green)"></div></div><span style="color:var(--green);font-size:11px;width:50px">Safe ✓</span></div></div>
         <div class="sl-row"><span style="color:var(--text2);width:50px">LINK</span><div style="display:flex;align-items:center;gap:8px;flex:1;justify-content:flex-end"><span style="color:var(--text2);font-family:var(--mono);font-size:12px">$12.00</span><div class="sl-bar"><div class="sl-fill" style="width:20%;background:var(--green)"></div></div><span style="color:var(--green);font-size:11px;width:50px">Safe ✓</span></div></div>
@@ -299,7 +299,7 @@ const COINS = [
   { id:'xrp',   cgId:'ripple',            coins:1138,       elSuffix:'xrp'   },
   { id:'btc',   cgId:'bitcoin',           coins:0.00643189, elSuffix:'btc'   },
   { id:'ada',   cgId:'cardano',           coins:635,        elSuffix:'ada'   },
-  { id:'kite',  cgId:'kite-ai',           coins:680,        elSuffix:'kite'  },
+  { id:'kite',  cgId:'kite-2',           coins:680,        elSuffix:'kite'  },
   { id:'id',    cgId:'space-id',          coins:833,        elSuffix:'id'    },
   { id:'doge',  cgId:'dogecoin',          coins:509,        elSuffix:'doge'  },
   { id:'link',  cgId:'chainlink',         coins:3.23,       elSuffix:'link'  },
