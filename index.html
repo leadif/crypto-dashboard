@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Fidael's Crypto Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0A0E1A;--bg2:#111827;--bg3:#1A2235;--border:#1E2D45;
+  --accent:#00C9FF;--green:#10D980;--red:#FF4757;--yellow:#FFB800;
+  --text:#E8EDF5;--text2:#7B8FAD;--text3:#4A5568;
+  --font:'Inter',sans-serif;--mono:'JetBrains Mono',monospace;
+  --safe-top:env(safe-area-inset-top,0px);--safe-bot:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100%;-webkit-font-smoothing:antialiased}
+body{padding-bottom:calc(var(--safe-bot) + 16px)}
+
+.refresh-bar{position:sticky;top:0;z-index:100;background:rgba(10,14,26,0.94);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:calc(var(--safe-top) + 8px) 16px 8px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.refresh-bar.stale{border-bottom-color:var(--yellow)}
+.refresh-info{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0}
+.refresh-status{font-size:11px;font-weight:600;color:var(--accent);display:flex;align-items:center;gap:5px}
+.refresh-bar.stale .refresh-status{color:var(--yellow)}
+.refresh-age{font-size:10px;color:var(--text2);font-family:var(--mono)}
+.stale-warn{display:none;font-size:10px;color:var(--yellow);font-weight:500}
+.refresh-bar.stale .stale-warn{display:block}
+.refresh-btn{display:flex;align-items:center;gap:7px;background:var(--accent);color:#000;border:none;border-radius:10px;padding:9px 16px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--font);white-space:nowrap;flex-shrink:0;-webkit-tap-highlight-color:rgba(0,201,255,0.3);touch-action:manipulation;-webkit-appearance:none;transition:opacity .15s,transform .1s}
+.refresh-btn:active{opacity:.8;transform:scale(0.97)}
+.refresh-btn:disabled{background:var(--bg3);color:var(--accent);border:1px solid var(--accent);cursor:not-allowed}
+.refresh-btn svg.spin{animation:spin .6s linear infinite}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;flex-shrink:0}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.85)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes flash-green{0%{background:rgba(16,217,128,0.2)}100%{background:transparent}}
+@keyframes flash-red{0%{background:rgba(255,71,87,0.2)}100%{background:transparent}}
+.flash-up{animation:flash-green 1s ease-out}
+.flash-dn{animation:flash-red 1s ease-out}
+
+.shell{max-width:1200px;margin:0 auto;padding:0 16px}
+.header{padding:20px 16px 0;max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+.header h1{font-size:20px;font-weight:600;letter-spacing:-.02em}
+.header p{font-size:12px;color:var(--text2);margin-top:2px}
+.live-pill{display:flex;align-items:center;gap:6px;background:rgba(0,201,255,0.08);border:1px solid rgba(0,201,255,0.25);border-radius:20px;padding:5px 12px;font-size:11px;font-weight:500;color:var(--accent)}
+
+.total-banner{margin:20px auto 0;max-width:1200px;padding:0 16px}
+.total-inner{background:linear-gradient(135deg,var(--bg2) 0%,#0D1929 100%);border:1px solid var(--border);border-radius:16px;padding:20px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;position:relative;overflow:hidden}
+.total-inner::before{content:'';position:absolute;top:-40px;right:-40px;width:180px;height:180px;background:radial-gradient(circle,rgba(0,201,255,0.06) 0%,transparent 70%);pointer-events:none}
+.total-label{font-size:12px;color:var(--text2);margin-bottom:4px}
+.total-value{font-size:36px;font-weight:700;font-family:var(--mono);color:var(--text);letter-spacing:-.03em}
+.total-delta{display:inline-flex;align-items:center;gap:5px;font-size:13px;font-weight:500;color:var(--green);margin-top:4px}
+.total-stats{display:flex;gap:24px;flex-wrap:wrap}
+.stat-item{text-align:right}
+.stat-label{font-size:11px;color:var(--text2);margin-bottom:3px}
+.stat-val{font-size:16px;font-weight:600;color:var(--text)}
+.stat-val.green{color:var(--green)}
+.stat-val.accent{color:var(--accent)}
+
+.error-bar{display:none;margin:10px 16px 0;max-width:1200px;margin-left:auto;margin-right:auto;background:rgba(255,71,87,0.1);border:1px solid rgba(255,71,87,0.3);border-radius:8px;padding:8px 14px;font-size:12px;color:var(--red)}
+.error-bar.visible{display:block}
+
+.main-grid{max-width:1200px;margin:16px auto 0;padding:0 16px;display:grid;grid-template-columns:1fr;gap:12px}
+@media(min-width:900px){.main-grid{grid-template-columns:1.1fr 0.9fr;align-items:start}}
+
+.panel{background:var(--bg2);border:1px solid var(--border);border-radius:16px;overflow:hidden}
+.panel-header{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.panel-title{font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.06em}
+.panel-badge{font-size:10px;font-weight:600;padding:3px 8px;border-radius:6px;background:rgba(0,201,255,0.1);color:var(--accent);border:1px solid rgba(0,201,255,0.2)}
+.panel-badge.green{background:rgba(16,217,128,0.1);color:var(--green);border-color:rgba(16,217,128,0.2)}
+.panel-badge.yellow{background:rgba(255,184,0,0.1);color:var(--yellow);border-color:rgba(255,184,0,0.2)}
+
+.coin-row{padding:12px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;transition:background .15s}
+.coin-row:last-child{border-bottom:none}
+.coin-row:hover{background:rgba(255,255,255,0.015)}
+.coin-row.warn{border-left:3px solid var(--yellow)}
+.clogo{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden}
+.cinfo{flex:1;min-width:0}
+.cname{font-size:13px;font-weight:500;color:var(--text);display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.ctag{font-size:9px;padding:1px 5px;border-radius:4px;font-weight:600}
+.clive{background:rgba(0,201,255,0.15);color:#00C9FF}
+.cwarn{background:rgba(255,184,0,0.15);color:#FFB800}
+.cdetail{font-size:11px;color:var(--text2);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cbar{height:3px;background:var(--bg3);border-radius:2px;margin-top:5px;overflow:hidden}
+.cbar-fill{height:100%;border-radius:2px}
+.cright{text-align:right;flex-shrink:0}
+.cval{font-size:14px;font-weight:600;font-family:var(--mono);color:var(--text)}
+.cchg{font-size:11px;font-weight:500;margin-top:2px}
+.cpct{font-size:10px;color:var(--text3);margin-top:1px}
+.up{color:var(--green)}.dn{color:var(--red)}.nt{color:var(--text2)}
+
+.target-row{padding:11px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
+.target-row:last-child{border-bottom:none}
+.target-coin{font-size:12px;font-weight:600;color:var(--text);width:50px;flex-shrink:0}
+.target-track{flex:1;height:6px;background:var(--bg3);border-radius:3px;position:relative}
+.target-fill{height:100%;border-radius:3px;position:relative}
+.target-tip{position:absolute;right:-1px;top:-4px;width:14px;height:14px;border-radius:50%;border:2px solid var(--bg2)}
+.target-info{text-align:right;flex-shrink:0;width:70px}
+.target-pct{font-size:12px;font-weight:600}
+.target-label{font-size:10px;color:var(--text2);margin-top:1px}
+
+.sl-row{display:flex;justify-content:space-between;align-items:center;font-size:12px}
+.sl-bar{width:60px;height:4px;background:var(--bg3);border-radius:2px;overflow:hidden}
+.sl-fill{height:100%;border-radius:2px}
+
+.footer{max-width:1200px;margin:12px auto 0;padding:0 16px 8px;font-size:10px;color:var(--text3);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px}
+
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+@media(max-width:400px){.total-value{font-size:28px}.total-stats{gap:14px}.refresh-btn{padding:8px 12px;font-size:11px}}
+</style>
+</head>
+<body>
+
+<div class="refresh-bar" id="refreshBar">
+  <div class="refresh-info">
+    <div class="refresh-status"><div class="live-dot"></div><span id="statusText">Fetching live prices…</span></div>
+    <div class="refresh-age" id="ageText">Please wait</div>
+    <div class="stale-warn">⚠ Prices over 15 min old — tap Refresh</div>
+  </div>
+  <button class="refresh-btn" id="refreshBtn" onclick="fetchAllPrices()" disabled>
+    <svg id="refreshIcon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.65 6.35A7.96 7.96 0 0012 4a8 8 0 00-8 8 8 8 0 008 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18a6 6 0 01-6-6 6 6 0 016-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+    Refresh Prices
+  </button>
+</div>
+
+<div class="header">
+  <div><h1>Fidael's Crypto Portfolio</h1><p id="lastUpdated">Loading…</p></div>
+  <div class="live-pill"><div class="live-dot"></div>Live prices</div>
+</div>
+
+<div class="total-banner">
+<div class="total-inner">
+  <div>
+    <div class="total-label">Total portfolio value</div>
+    <div class="total-value" id="totalValue">—</div>
+    <div class="total-delta" id="totalDelta">13 coins · loading…</div>
+  </div>
+  <div class="total-stats">
+    <div class="stat-item"><div class="stat-label">Biggest holding</div><div class="stat-val" id="biggestHolding">BNB</div></div>
+    <div class="stat-item"><div class="stat-label">Best performer</div><div class="stat-val green" id="bestPerformer">—</div></div>
+    <div class="stat-item"><div class="stat-label">TOKEN2049 Singapore</div><div class="stat-val accent" id="countdown">— days 🇸🇬</div></div>
+  </div>
+</div>
+</div>
+
+<div class="error-bar" id="errorBar"></div>
+
+<div class="main-grid">
+  <div class="panel">
+    <div class="panel-header">
+      <span class="panel-title">Your Holdings</span>
+      <span class="panel-badge">13 coins</span>
+    </div>
+
+    <div class="coin-row" id="row-bnb">
+      <div class="clogo" style="background:#F3BA2F"><svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 2L8.5 5.5 10 7l2-2 2 2 1.5-1.5L12 2zM6.5 8L5 9.5 6.5 11 8 9.5 6.5 8zm11 0L16 9.5l1.5 1.5 1.5-1.5L17.5 8zM12 8l-4 4 4 4 4-4-4-4zm0 2.5L13.5 12 12 13.5 10.5 12 12 10.5zM6.5 13L5 14.5 6.5 16l1.5-1.5L6.5 13zm11 0L16 14.5l1.5 1.5 1.5-1.5L17.5 13zM12 17l-1.5 1.5 1.5 1.5 1.5-1.5L12 17z"/></svg></div>
+      <div class="cinfo"><div class="cname">BNB <span class="ctag clive">⚡ live</span></div><div class="cdetail" id="det-bnb">2.59 coins · loading…</div><div class="cbar"><div class="cbar-fill" style="width:100%;background:#F3BA2F"></div></div></div>
+      <div class="cright"><div class="cval" id="val-bnb">—</div><div class="cchg nt" id="chg-bnb">—</div><div class="cpct">50.7% of portfolio</div></div>
+    </div>
+
+    <div class="coin-row" id="row-xrp">
+      <div class="clogo" style="background:#00aae4"><svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M7 3L12 8l5-5h3l-6.5 6.5c-.83.83-2.17.83-3 0L4 3h3zm10 18l-5-5-5 5H4l6.5-6.5c.83-.83 2.17-.83 3 0L20 21h-3z"/></svg></div>
+      <div class="cinfo"><div class="cname">XRP <span class="ctag clive">⚡ live</span></div><div class="cdetail" id="det-xrp">1,138 coins · loading…</div><div class="cbar"><div class="cbar-fill" style="width:84%;background:#00aae4"></div></div></div>
+      <div class="cright"><div class="cval" id="val-xrp">—</div><div class="cchg nt" id="chg-xrp">—</div><div class="cpct">43.9% · stop $1.20</div></div>
+    </div>
+
+    <div class="coin-row" id="row-btc">
+      <div class="clogo" style="background:#F7931A"><svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M14.5 10.17c.34-.2.58-.53.58-.97 0-.9-.72-1.2-1.83-1.2H11v2.4h2.25c.5 0 1-.06 1.25-.23zm.25 2.46c0-.97-.72-1.33-1.92-1.33H11v2.7h1.83c1.3 0 1.92-.5 1.92-1.37zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm2.38 11.45c0 1.4-1.07 2.05-2.63 2.05H9.5v2h-1v-2H7.5v-7h1v-2h1.5v2h2.75c1.5 0 2.38.72 2.38 2 0 .65-.3 1.15-.75 1.47.67.33 1 .9 1 1.48z"/></svg></div>
+      <div class="cinfo"><div class="cname">Bitcoin (BTC) <span class="ctag clive">⚡ live</span></div><div class="cdetail" id="det-btc">0.00643 coins · loading…</div><div class="cbar"><div class="cbar-fill" style="width:27%;background:#F7931A"></div></div></div>
+      <div class="cright"><div class="cval" id="val-btc">—</div><div class="cchg nt" id="chg-btc">—</div><div class="cpct">13.6%</div></div>
+    </div>
+
+    <div class="coin-row" id="row-ada">
+      <div class="clogo" style="background:#0033AD"><svg width="18" height="18" viewBox="0 0 24 24" fill="white"><circle cx="12" cy="4" r="1.5"/><circle cx="12" cy="20" r="1.5"/><circle cx="4" cy="8" r="1.5"/><circle cx="20" cy="8" r="1.5"/><circle cx="4" cy="16" r="1.5"/><circle cx="20" cy="16" r="1.5"/><circle cx="7" cy="6" r="1"/><circle cx="17" cy="6" r="1"/><circle cx="7" cy="18" r="1"/><circle cx="17" cy="18" r="1"/><circle cx="12" cy="12" r="2"/></svg></div>
+      <div class="cinfo"><div class="cname">Cardano (ADA) <span class="ctag clive">⚡ live</span></div><div class="cdetail" id="det-ada">635 coins · loading…</div><div class="cbar"><div class="cbar-fill" style="width:8%;background:#0033AD"></div></div></div>
+      <div class="cright"><div class="cval" id="val-ada">—</div><div class="cchg nt" id="chg-ada">—</div><div class="cpct">4.0% · target $0.263</div></div>
+    </div>
+
+    <div class="coin-row warn" id="row-kite">
+      <div class="clogo" style="background:#FF6B2B"><svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M12 2L4 12l8 10 8-10L12 2zm0 3.5L17.5 12 12 18.5 6.5 12 12 5.5z"/></svg></div>
+      <div class="cinfo"><div class="cname">KITE <span class="ctag cwarn">⚠ stop $0.130</span> <span class="ctag clive">⚡ live</span></div><div class="cdetail" id="det-kite">680 coins · loading…</div><div class="cbar"><div class="cbar-fill" style="width:3%;background:#FF6B2B"></div></div></div>
+      <div class="cright"><div class="cval" id="val-kite">—</div><div class="cchg nt" id="chg-kite">—</div><div class="cpct">Sell #2 @ $0.145</div></div>
+    </div>
+
+    <div class="coin-row" id="row-id">
+      <div class="clogo" style="background:#2B6CB0"><svg width="18" height="18" viewBox="0 0 24 24" fill="white"><rect x="3" y="4" width="18" height="16" rx="2" stroke="white" stroke-width="1.5" fill="none"/><circle cx="9" cy="10" r="2" fill="white"/><line x1="14" y1="9" x2="19" y2="9" stroke="white" stroke-width="1.5"/><line x1="14" y1="12" x2="19" y2="12" stroke="white" stroke-width="1.5"/></svg></div>
+      <div class="cinfo"><div class="cname">Space ID (ID) <span class="ctag clive">⚡ live</span></div><div class="cdetail" id="det-id">833 coins · loading…</div><div class="cbar"><div class="cbar-fill" style="width:1%;background:#2B6CB0"></div></div></div>
+      <div class="cright"><div class="cval" id="val-id">—</div><div class="cchg nt" id="chg-id">—</div><div class="cpct">0.8%</div></div>
+    </div>
+
+    <div class="coin-row" id="row-doge">
+      <div class="clogo" style="background:#C2A633"><svg width="20" height="20" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#C2A633"/><text x="12" y="16.5" text-anchor="middle" font-size="12" font-weight="bold" fill="white" font-family="Arial">Ð</text></svg></div>
+      <div class="cinfo"><div class="cname">Dogecoin (DOGE) <span class="ctag clive">⚡ live</span></div><div class="cdetail" id="det-doge">509 coins · loading…</div><div class="cbar"><div class="cbar-fill" style="width:1.5%;background:#C2A633"></div></div></div>
+      <div class="cright"><div class="cval" id="val-doge">—</div><div class="cchg nt" id="chg-doge">—</div><div class="cpct">stop $0.088 · target $0.115</div></div>
+    </div>
+
+    <div class="coin-row" id="row-link">
+      <div class="clogo" style="background:#2A5ADA"><svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M12 2l-2.5 1.5L7 9l2.5 1.5L12 9l2.5 1.5L17 9l-2.5-5.5L12 2zM7 10.5L4.5 12 4 16.5 7 18l2.5-1.5v-3L7 10.5zm10 0l-2.5 3v3L17 18l3-1.5-.5-4.5L17 10.5zM9.5 13.5v3l2.5 1.5 2.5-1.5v-3L12 12l-2.5 1.5z"/></svg></div>
+      <div class="cinfo"><div class="cname">Chainlink (LINK) <span class="ctag clive">⚡ live</span></div><div class="cdetail" id="det-link">3.23 coins · loading…</div><div class="cbar"><div class="cbar-fill" style="width:1.2%;background:#2A5ADA"></div></div></div>
+      <div class="cright"><div class="cval" id="val-link">—</div><div class="cchg nt" id="chg-link">—</div><div class="cpct">target $16.00</div></div>
+    </div>
+
+    <div class="coin-row" id="row-pepe">
+      <div class="clogo" style="background:#3a7d44"><svg width="20" height="20" viewBox="0 0 24 24"><ellipse cx="12" cy="13" rx="8" ry="7" fill="#3a7d44"/><ellipse cx="12" cy="13" rx="5" ry="4.5" fill="#5a9e5a"/><circle cx="9.5" cy="11" r="1.8" fill="white"/><circle cx="14.5" cy="11" r="1.8" fill="white"/><circle cx="9.5" cy="11" r="0.9" fill="#111"/><circle cx="14.5" cy="11" r="0.9" fill="#111"/><path d="M9.5 15.5 Q12 17 14.5 15.5" stroke="white" stroke-width="1" fill="none" stroke-linecap="round"/></svg></div>
+      <div class="cinfo"><div class="cname">Pepe (PEPE) <span class="ctag clive">⚡ live</span></div><div class="cdetail" id="det-pepe">8,978,610 coins · loading…</div><div class="cbar"><div class="cbar-fill" style="width:1%;background:#3a7d44"></div></div></div>
+      <div class="cright"><div class="cval" id="val-pepe">—</div><div class="cchg nt" id="chg-pepe">—</div><div class="cpct">1.0%</div></div>
+    </div>
+
+    <div class="coin-row" id="row-pol">
+      <div class="clogo" style="background:#8247E5"><svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M16.5 9.5l-4.5-2.5-4.5 2.5v5l4.5 2.5 4.5-2.5v-5zm-4.5 5.5l-3-1.7V11l3 1.7 3-1.7v2.3l-3 1.7z"/></svg></div>
+      <div class="cinfo"><div class="cname">POL (Polygon) <span class="ctag clive">⚡ live</span></div><div class="cdetail" id="det-pol">234 coins · loading…</div><div class="cbar"><div class="cbar-fill" style="width:0.7%;background:#8247E5"></div></div></div>
+      <div class="cright"><div class="cval" id="val-pol">—</div><div class="cchg nt" id="chg-pol">—</div><div class="cpct">0.6%</div></div>
+    </div>
+
+    <div class="coin-row" id="row-sui">
+      <div class="clogo" style="background:#4DA2FF"><svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M12 3C9 3 6.5 5.5 6.5 9c0 2 1 3.8 2.5 5L12 22l3-8c1.5-1.2 2.5-3 2.5-5 0-3.5-2.5-6-6-6zm0 8a2.5 2.5 0 110-5 2.5 2.5 0 010 5z"/></svg></div>
+      <div class="cinfo"><div class="cname">Sui (SUI) <span class="ctag clive">⚡ live</span></div><div class="cdetail" id="det-sui">23 coins · loading…</div><div class="cbar"><div class="cbar-fill" style="width:0.6%;background:#4DA2FF"></div></div></div>
+      <div class="cright"><div class="cval" id="val-sui">—</div><div class="cchg nt" id="chg-sui">—</div><div class="cpct">stop $0.88 · target $1.265</div></div>
+    </div>
+
+    <div class="coin-row" id="row-pump">
+      <div class="clogo" style="background:#00C853"><svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M3 20l4.5-9 4 4.5 4-10.5 4.5 15H3z"/></svg></div>
+      <div class="cinfo"><div class="cname">Pump.fun (PUMP) <span class="ctag clive">⚡ live</span></div><div class="cdetail" id="det-pump">3,667 coins · loading…</div><div class="cbar"><div class="cbar-fill" style="width:0.4%;background:#00C853"></div></div></div>
+      <div class="cright"><div class="cval" id="val-pump">—</div><div class="cchg nt" id="chg-pump">—</div><div class="cpct">0.4%</div></div>
+    </div>
+
+    <div class="coin-row" id="row-pengu">
+      <div class="clogo" style="background:#4A90D9"><svg width="20" height="20" viewBox="0 0 24 24"><ellipse cx="12" cy="14" rx="6" ry="7" fill="#1a1a1a"/><ellipse cx="12" cy="14.5" rx="3.5" ry="4.5" fill="white"/><circle cx="10" cy="11.5" r="1.2" fill="white"/><circle cx="14" cy="11.5" r="1.2" fill="white"/><circle cx="10" cy="11.5" r="0.6" fill="#1a1a1a"/><circle cx="14" cy="11.5" r="0.6" fill="#1a1a1a"/><ellipse cx="12" cy="8" rx="4" ry="3.2" fill="#1a1a1a"/><ellipse cx="12" cy="18" rx="2.5" ry="1.2" fill="#FF8C00" opacity="0.9"/></svg></div>
+      <div class="cinfo"><div class="cname">Pudgy Penguins (PENGU) <span class="ctag clive">⚡ live</span></div><div class="cdetail" id="det-pengu">1,059 coins · loading…</div><div class="cbar"><div class="cbar-fill" style="width:0.3%;background:#4A90D9"></div></div></div>
+      <div class="cright"><div class="cval" id="val-pengu">—</div><div class="cchg nt" id="chg-pengu">—</div><div class="cpct">0.3%</div></div>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:12px">
+    <div class="panel">
+      <div class="panel-header"><span class="panel-title">Target Tracker</span><span class="panel-badge green">Active</span></div>
+      <div class="target-row"><div class="target-coin">XRP</div><div class="target-track"><div class="target-fill" style="width:88%;background:linear-gradient(90deg,#00aae4,#00C9FF)"><div class="target-tip" style="background:#00C9FF"></div></div></div><div class="target-info"><div class="target-pct up">88%</div><div class="target-label">to $1.60</div></div></div>
+      <div class="target-row"><div class="target-coin">ADA</div><div class="target-track"><div class="target-fill" style="width:72%;background:linear-gradient(90deg,#0033AD,#4A6FE3)"><div class="target-tip" style="background:#4A6FE3"></div></div></div><div class="target-info"><div class="target-pct up">72%</div><div class="target-label">to $0.263</div></div></div>
+      <div class="target-row"><div class="target-coin">KITE</div><div class="target-track"><div class="target-fill" style="width:68%;background:linear-gradient(90deg,#FF6B2B,#FFB800)"><div class="target-tip" style="background:#FFB800"></div></div></div><div class="target-info"><div class="target-pct" style="color:var(--yellow)">68%</div><div class="target-label">to $0.145</div></div></div>
+      <div class="target-row"><div class="target-coin">DOGE</div><div class="target-track"><div class="target-fill" style="width:59%;background:linear-gradient(90deg,#C2A633,#FFD700)"><div class="target-tip" style="background:#FFD700"></div></div></div><div class="target-info"><div class="target-pct" style="color:var(--yellow)">59%</div><div class="target-label">to $0.115</div></div></div>
+      <div class="target-row"><div class="target-coin">LINK</div><div class="target-track"><div class="target-fill" style="width:14%;background:linear-gradient(90deg,#2A5ADA,#00C9FF)"><div class="target-tip" style="background:#00C9FF"></div></div></div><div class="target-info"><div class="target-pct" style="color:var(--text2)">14%</div><div class="target-label">to $16.00</div></div></div>
+      <div class="target-row"><div class="target-coin">SUI</div><div class="target-track"><div class="target-fill" style="width:50%;background:linear-gradient(90deg,#4DA2FF,#00C9FF)"><div class="target-tip" style="background:#00C9FF"></div></div></div><div class="target-info"><div class="target-pct up">50%</div><div class="target-label">to $1.265</div></div></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header"><span class="panel-title">Stop Losses</span><span class="panel-badge">Protected</span></div>
+      <div style="padding:12px 18px;display:flex;flex-direction:column;gap:10px">
+        <div class="sl-row"><span style="color:var(--text2);width:50px">XRP</span><div style="display:flex;align-items:center;gap:8px;flex:1;justify-content:flex-end"><span style="color:var(--text2);font-family:var(--mono);font-size:12px">$1.20</span><div class="sl-bar"><div class="sl-fill" style="width:25%;background:var(--green)"></div></div><span style="color:var(--green);font-size:11px;width:50px">Safe ✓</span></div></div>
+        <div class="sl-row"><span style="color:var(--text2);width:50px">KITE</span><div style="display:flex;align-items:center;gap:8px;flex:1;justify-content:flex-end"><span style="color:var(--text2);font-family:var(--mono);font-size:12px">$0.130</span><div class="sl-bar"><div class="sl-fill" style="width:85%;background:var(--yellow)"></div></div><span style="color:var(--yellow);font-size:11px;width:50px">Watch ⚠</span></div></div>
+        <div class="sl-row"><span style="color:var(--text2);width:50px">DOGE</span><div style="display:flex;align-items:center;gap:8px;flex:1;justify-content:flex-end"><span style="color:var(--text2);font-family:var(--mono);font-size:12px">$0.088</span><div class="sl-bar"><div class="sl-fill" style="width:40%;background:var(--green)"></div></div><span style="color:var(--green);font-size:11px;width:50px">Safe ✓</span></div></div>
+        <div class="sl-row"><span style="color:var(--text2);width:50px">LINK</span><div style="display:flex;align-items:center;gap:8px;flex:1;justify-content:flex-end"><span style="color:var(--text2);font-family:var(--mono);font-size:12px">$12.00</span><div class="sl-bar"><div class="sl-fill" style="width:20%;background:var(--green)"></div></div><span style="color:var(--green);font-size:11px;width:50px">Safe ✓</span></div></div>
+        <div class="sl-row"><span style="color:var(--text2);width:50px">SUI</span><div style="display:flex;align-items:center;gap:8px;flex:1;justify-content:flex-end"><span style="color:var(--text2);font-family:var(--mono);font-size:12px">$0.880</span><div class="sl-bar"><div class="sl-fill" style="width:15%;background:var(--green)"></div></div><span style="color:var(--green);font-size:11px;width:50px">Safe ✓</span></div></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header"><span class="panel-title">Upcoming Events</span><span class="panel-badge yellow">Watch</span></div>
+      <div style="padding:14px 18px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="width:44px;height:44px;border-radius:10px;background:rgba(0,201,255,0.1);border:1px solid rgba(0,201,255,0.2);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0">
+            <div style="font-size:16px;font-weight:700;color:var(--accent);font-family:var(--mono);line-height:1" id="daysLeft">—</div>
+            <div style="font-size:8px;color:var(--text2)">DAYS</div>
+          </div>
+          <div>
+            <div style="font-size:12px;font-weight:600;color:var(--text)">TOKEN2049 Singapore 🇸🇬</div>
+            <div style="font-size:11px;color:var(--text2);margin-top:2px">Oct 7–8 · Marina Bay Sands</div>
+            <div style="font-size:11px;color:var(--green);margin-top:2px">Bullish catalyst for all your coins</div>
+          </div>
+        </div>
+        <div style="height:1px;background:var(--border)"></div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="width:44px;height:44px;border-radius:10px;background:rgba(255,184,0,0.08);border:1px solid rgba(255,184,0,0.2);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0">
+            <div style="font-size:14px;font-weight:700;color:var(--yellow);font-family:var(--mono);line-height:1">Q3</div>
+            <div style="font-size:8px;color:var(--text2)">ENDS</div>
+          </div>
+          <div>
+            <div style="font-size:12px;font-weight:600;color:var(--text)">Q3 Ends + SEC Fiscal Year</div>
+            <div style="font-size:11px;color:var(--text2);margin-top:2px">Sep 30 · Deribit options expiry</div>
+            <div style="font-size:11px;color:var(--yellow);margin-top:2px">Volatility expected · stops active</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <span>⚡ CoinGecko API · Crypto.com Exchange API · auto-refreshes every 60s</span>
+  <span style="display:flex;align-items:center;gap:8px">
+    <span style="background:rgba(0,201,255,0.08);border:1px solid rgba(0,201,255,0.2);border-radius:6px;padding:3px 10px;font-size:10px;color:var(--accent);font-weight:600">🔐 TIGER-MOON-74</span>
+    <span style="font-family:var(--mono)" id="footerTime"></span>
+  </span>
+</div>
+
+<script>
+const COINS = [
+  { id:'bnb',   cgId:'binancecoin',       coins:2.59,       elSuffix:'bnb'   },
+  { id:'xrp',   cgId:'ripple',            coins:1138,       elSuffix:'xrp'   },
+  { id:'btc',   cgId:'bitcoin',           coins:0.00643189, elSuffix:'btc'   },
+  { id:'ada',   cgId:'cardano',           coins:635,        elSuffix:'ada'   },
+  { id:'kite',  cgId:'kite-ai',           coins:680,        elSuffix:'kite'  },
+  { id:'id',    cgId:'space-id',          coins:833,        elSuffix:'id'    },
+  { id:'doge',  cgId:'dogecoin',          coins:509,        elSuffix:'doge'  },
+  { id:'link',  cgId:'chainlink',         coins:3.23,       elSuffix:'link'  },
+  { id:'pepe',  cgId:'pepe',              coins:8978610,    elSuffix:'pepe'  },
+  { id:'pol',   cgId:'matic-network',     coins:234,        elSuffix:'pol'   },
+  { id:'sui',   cgId:'sui',               coins:23,         elSuffix:'sui'   },
+  { id:'pump',  cgId:'pump-fun',          coins:3667,       elSuffix:'pump'  },
+  { id:'pengu', cgId:'pudgy-penguins',    coins:1059,       elSuffix:'pengu' },
+];
+
+const CG_IDS = COINS.map(c => c.cgId).join(',');
+const CG_URL = `https://api.coingecko.com/api/v3/simple/price?ids=${CG_IDS}&vs_currencies=usd&include_24hr_change=true`;
+
+let lastFetch = null;
+let autoTimer = null;
+let ageTimer  = null;
+
+function fmt(val, decimals) {
+  if (val >= 1000) return '$' + val.toLocaleString('en', {maximumFractionDigits:0});
+  if (val >= 1)    return '$' + val.toFixed(decimals || 4);
+  if (val >= 0.01) return '$' + val.toFixed(5);
+  if (val >= 0.0001) return '$' + val.toFixed(6);
+  return '$' + val.toFixed(9);
+}
+
+function flash(id, dir) {
+  const row = document.getElementById('row-' + id);
+  if (!row) return;
+  row.classList.remove('flash-up','flash-dn');
+  void row.offsetWidth;
+  row.classList.add(dir === 'up' ? 'flash-up' : 'flash-dn');
+}
+
+function updateAgeBar() {
+  if (!lastFetch) return;
+  const secs = Math.floor((Date.now() - lastFetch) / 1000);
+  const mins = Math.floor(secs / 60);
+  const s    = secs % 60;
+  const bar  = document.getElementById('refreshBar');
+  const t    = new Date(lastFetch).toLocaleTimeString('en-MY',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:true});
+  document.getElementById('ageText').textContent =
+    (secs < 60 ? `${secs}s ago` : `${mins}m ${s}s ago`) + ' · ' + t;
+  if (secs >= 900) {
+    bar.classList.add('stale');
+    document.getElementById('statusText').textContent = 'Prices may be stale';
+  } else {
+    bar.classList.remove('stale');
+  }
+}
+
+function countdown() {
+  const token2049 = new Date('2026-10-07T00:00:00+08:00');
+  const now = new Date();
+  const days = Math.ceil((token2049 - now) / 86400000);
+  const display = days > 0 ? days : 0;
+  document.getElementById('daysLeft').textContent  = display;
+  document.getElementById('countdown').textContent = display + ' days 🇸🇬';
+}
+
+async function fetchAllPrices() {
+  const btn  = document.getElementById('refreshBtn');
+  const icon = document.getElementById('refreshIcon');
+  const err  = document.getElementById('errorBar');
+
+  btn.disabled = true;
+  icon.classList.add('spin');
+  document.getElementById('statusText').textContent = 'Fetching live prices…';
+  err.classList.remove('visible');
+
+  try {
+    const res  = await fetch(CG_URL);
+    if (!res.ok) throw new Error('CoinGecko returned ' + res.status);
+    const data = await res.json();
+
+    let total = 0, bestChg = -Infinity, bestSym = '', biggestVal = 0, biggestSym = '';
+
+    COINS.forEach(c => {
+      const info = data[c.cgId];
+      if (!info) return;
+      const price = info.usd;
+      const chg24 = info.usd_24h_change || 0;
+      const val   = c.coins * price;
+      total += val;
+
+      if (chg24 > bestChg) { bestChg = chg24; bestSym = c.id.toUpperCase(); }
+      if (val > biggestVal) { biggestVal = val; biggestSym = c.id.toUpperCase(); }
+
+      const old = parseFloat(document.getElementById('val-' + c.elSuffix)?.textContent?.replace(/[^0-9.]/g,'')) || 0;
+      flash(c.id, price >= old ? 'up' : 'dn');
+
+      const valEl  = document.getElementById('val-'  + c.elSuffix);
+      const chgEl  = document.getElementById('chg-'  + c.elSuffix);
+      const detEl  = document.getElementById('det-'  + c.elSuffix);
+
+      if (valEl) valEl.textContent = val >= 1000
+        ? '$' + val.toLocaleString('en',{maximumFractionDigits:0})
+        : '$' + val.toFixed(2);
+
+      if (chgEl) {
+        chgEl.textContent = (chg24 >= 0 ? '▲' : '▼') + Math.abs(chg24).toFixed(2) + '%';
+        chgEl.className   = 'cchg ' + (chg24 >= 0 ? 'up' : 'dn');
+      }
+
+      if (detEl) {
+        const parts = detEl.textContent.split('·');
+        if (parts.length >= 2) {
+          const p = price;
+          const ps = p < 0.000001 ? p.toFixed(10) : p < 0.001 ? p.toFixed(9) : p < 1 ? p.toFixed(5) : p < 100 ? p.toFixed(4) : p.toLocaleString('en',{maximumFractionDigits:2});
+          parts[1] = ' $' + ps;
+          detEl.textContent = parts.join('·');
+        }
+      }
+    });
+
+    document.getElementById('totalValue').textContent = '$' + total.toLocaleString('en',{maximumFractionDigits:0});
+    document.getElementById('totalDelta').textContent = '13 coins · refreshed just now';
+    document.getElementById('bestPerformer').textContent = bestSym + (bestChg >= 0 ? ' ▲' : ' ▼') + Math.abs(bestChg).toFixed(2) + '%';
+    document.getElementById('biggestHolding').textContent = biggestSym + ' $' + biggestVal.toLocaleString('en',{maximumFractionDigits:0});
+
+    lastFetch = Date.now();
+    document.getElementById('statusText').textContent = '✓ Prices live';
+    setTimeout(() => { document.getElementById('statusText').textContent = 'Live prices'; }, 3000);
+
+    const now = new Date();
+    document.getElementById('lastUpdated').textContent =
+      'Updated: ' + now.toLocaleTimeString('en-MY',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:true}) +
+      ' · ' + now.toLocaleDateString('en-MY',{day:'numeric',month:'short',year:'numeric'});
+    document.getElementById('footerTime').textContent =
+      now.toISOString().slice(0,19).replace('T',' ') + ' UTC';
+
+  } catch(e) {
+    err.textContent = '⚠ Could not fetch prices: ' + e.message + ' — will retry in 60s';
+    err.classList.add('visible');
+    document.getElementById('statusText').textContent = 'Fetch failed — retrying soon';
+  } finally {
+    btn.disabled = false;
+    icon.classList.remove('spin');
+  }
+}
+
+function startAgeTimer() {
+  if (ageTimer) clearInterval(ageTimer);
+  ageTimer = setInterval(updateAgeBar, 1000);
+}
+
+function startAutoRefresh() {
+  if (autoTimer) clearInterval(autoTimer);
+  autoTimer = setInterval(fetchAllPrices, 60000);
+}
+
+countdown();
+fetchAllPrices();
+startAgeTimer();
+startAutoRefresh();
+</script>
+</body>
+</html>
