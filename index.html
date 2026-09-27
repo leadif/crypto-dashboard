@@ -294,37 +294,49 @@ body{padding-bottom:calc(var(--safe-bot) + 16px)}
 </div>
 
 <script>
+// ── PRICE DATA ──────────────────────────────────────────────
 const COINS = [
-  // Crypto.com Exchange API — real-time, never cached
-  { id:'xrp',   sym:'XRP',   coins:1138,       source:'cdc', cdcSym:'XRP_USDT'   },
-  { id:'btc',   sym:'BTC',   coins:0.00643189, source:'cdc', cdcSym:'BTC_USDT'   },
-  { id:'ada',   sym:'ADA',   coins:635,        source:'cdc', cdcSym:'ADA_USDT'   },
-  { id:'doge',  sym:'DOGE',  coins:509,        source:'cdc', cdcSym:'DOGE_USDT'  },
-  { id:'link',  sym:'LINK',  coins:3.23,       source:'cdc', cdcSym:'LINK_USDT'  },
-  { id:'pepe',  sym:'PEPE',  coins:8978610,    source:'cdc', cdcSym:'PEPE_USDT'  },
-  { id:'pol',   sym:'POL',   coins:234,        source:'cdc', cdcSym:'POL_USDT'   },
-  { id:'sui',   sym:'SUI',   coins:23,         source:'cdc', cdcSym:'SUI_USDT'   },
-  { id:'pengu', sym:'PENGU', coins:1059,       source:'cdc', cdcSym:'PENGU_USDT' },
-  // Page title fetch — Binance/blockchain.com
-  { id:'bnb',   sym:'BNB',   coins:2.59,       source:'page', url:'https://www.blockchain.com/explorer/assets/bnb' },
-  { id:'kite',  sym:'KITE',  coins:680,        source:'page', url:'https://www.binance.com/en/trade/KITE_USDT?type=spot' },
-  { id:'id',    sym:'ID',    coins:833,        source:'page', url:'https://www.binance.com/en/trade/ID_USDT?type=spot'   },
-  { id:'pump',  sym:'PUMP',  coins:3667,       source:'page', url:'https://www.binance.com/en/trade/PUMP_USDT?type=spot' },
+  // Crypto.com Exchange API — routed through allorigins CORS proxy
+  { id:'xrp',   sym:'XRP',   coins:1138,       source:'cdc',  cdcSym:'XRP_USDT'   },
+  { id:'btc',   sym:'BTC',   coins:0.00643189, source:'cdc',  cdcSym:'BTC_USDT'   },
+  { id:'ada',   sym:'ADA',   coins:635,        source:'cdc',  cdcSym:'ADA_USDT'   },
+  { id:'doge',  sym:'DOGE',  coins:509,        source:'cdc',  cdcSym:'DOGE_USDT'  },
+  { id:'link',  sym:'LINK',  coins:3.23,       source:'cdc',  cdcSym:'LINK_USDT'  },
+  { id:'pepe',  sym:'PEPE',  coins:8978610,    source:'cdc',  cdcSym:'PEPE_USDT'  },
+  { id:'pol',   sym:'POL',   coins:234,        source:'cdc',  cdcSym:'POL_USDT'   },
+  { id:'sui',   sym:'SUI',   coins:23,         source:'cdc',  cdcSym:'SUI_USDT'   },
+  { id:'pengu', sym:'PENGU', coins:1059,       source:'cdc',  cdcSym:'PENGU_USDT' },
+  // Page title fetch via allorigins proxy
+  { id:'bnb',   sym:'BNB',   coins:2.59,       source:'page', url:'https://www.blockchain.com/explorer/assets/bnb'           },
+  { id:'kite',  sym:'KITE',  coins:680,        source:'page', url:'https://www.binance.com/en/trade/KITE_USDT?type=spot'     },
+  { id:'id',    sym:'ID',    coins:833,        source:'page', url:'https://www.binance.com/en/trade/ID_USDT?type=spot'       },
+  { id:'pump',  sym:'PUMP',  coins:3667,       source:'page', url:'https://www.binance.com/en/trade/PUMP_USDT?type=spot'     },
 ];
 
+const PROXY = 'https://api.allorigins.win/get?url=';
 
 let lastFetch = null;
-let autoTimer = null;
-let ageTimer  = null;
+let ageInterval = null;
+let autoTimer   = null;
 
-function fmt(val, decimals) {
-  if (val >= 1000) return '$' + val.toLocaleString('en', {maximumFractionDigits:0});
-  if (val >= 1)    return '$' + val.toFixed(decimals || 4);
-  if (val >= 0.01) return '$' + val.toFixed(5);
-  if (val >= 0.0001) return '$' + val.toFixed(6);
-  return '$' + val.toFixed(9);
+// ── FETCH FUNCTIONS ─────────────────────────────────────────
+async function fetchCdcPrice(sym) {
+  const apiUrl = 'https://api.crypto.com/exchange/v1/public/get-ticker?instrument_name=' + sym;
+  const res    = await fetch(PROXY + encodeURIComponent(apiUrl), {cache:'no-store'});
+  const outer  = await res.json();
+  const data   = JSON.parse(outer.contents);
+  return parseFloat(data.result.data[0].a);
 }
 
+async function fetchPagePrice(url) {
+  const res  = await fetch(PROXY + encodeURIComponent(url), {cache:'no-store'});
+  const data = await res.json();
+  const m    = data.contents.match(/<title>([0-9.]+)/i);
+  if (!m) throw new Error('No price in title for ' + url);
+  return parseFloat(m[1]);
+}
+
+// ── FLASH ANIMATION ─────────────────────────────────────────
 function flash(id, dir) {
   const row = document.getElementById('row-' + id);
   if (!row) return;
@@ -333,69 +345,7 @@ function flash(id, dir) {
   row.classList.add(dir === 'up' ? 'flash-up' : 'flash-dn');
 }
 
-function updateAgeBar() {
-  if (!lastFetch) return;
-  const secs = Math.floor((Date.now() - lastFetch) / 1000);
-  const mins = Math.floor(secs / 60);
-  const s    = secs % 60;
-  const bar  = document.getElementById('refreshBar');
-  const t    = new Date(lastFetch).toLocaleTimeString('en-MY',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:true});
-  document.getElementById('ageText').textContent =
-    (secs < 60 ? `${secs}s ago` : `${mins}m ${s}s ago`) + ' · ' + t;
-  if (secs >= 900) {
-    bar.classList.add('stale');
-    document.getElementById('statusText').textContent = 'Prices may be stale';
-  } else {
-    bar.classList.remove('stale');
-  }
-}
-
-function countdown() {
-  const token2049 = new Date('2026-10-07T00:00:00+08:00');
-  const now = new Date();
-  const days = Math.ceil((token2049 - now) / 86400000);
-  const display = days > 0 ? days : 0;
-  document.getElementById('daysLeft').textContent  = display;
-  document.getElementById('countdown').textContent = display + ' days 🇸🇬';
-}
-
-// Extracts price from Binance page title e.g. "86147.66 Trade BTC/USDT Spot..."
-function parsePriceFromTitle(text) {
-  const match = text.match(/^([0-9.]+)/);
-  return match ? parseFloat(match[1]) : null;
-}
-
-// CORS proxy to fetch Binance pages from hosted environment
-const PROXY = 'https://api.allorigins.win/get?url=';
-
-async function fetchCoinPrice(coin) {
-  const res = await fetch(PROXY + encodeURIComponent(coin.url));
-  const data = await res.json();
-  // Price is in the <title> tag of the page
-  const titleMatch = data.contents.match(/<title>([^<]+)<\/title>/i);
-  if (!titleMatch) throw new Error('No title for ' + coin.sym);
-  const price = parsePriceFromTitle(titleMatch[1].trim());
-  if (!price) throw new Error('No price in title for ' + coin.sym);
-  return price;
-}
-
-const CDC_BASE = 'https://api.crypto.com/exchange/v1/public/get-ticker?instrument_name=';
-const PROXY   = 'https://api.allorigins.win/get?url=';
-
-async function fetchCdcPrice(sym) {
-  const res  = await fetch(CDC_BASE + sym, {cache:'no-store'});
-  const data = await res.json();
-  return parseFloat(data.result.data[0].a); // last traded price
-}
-
-async function fetchPagePrice(url) {
-  const res  = await fetch(PROXY + encodeURIComponent(url), {cache:'no-store'});
-  const data = await res.json();
-  const m    = data.contents.match(/<title>([0-9.]+)/i);
-  if (!m) throw new Error('No price in title: ' + url);
-  return parseFloat(m[1]);
-}
-
+// ── FETCH ALL PRICES ────────────────────────────────────────
 async function fetchAllPrices() {
   const btn  = document.getElementById('refreshBtn');
   const icon = document.getElementById('refreshIcon');
@@ -447,14 +397,14 @@ async function fetchAllPrices() {
     });
 
     document.getElementById('totalValue').textContent = '$' + total.toLocaleString('en',{maximumFractionDigits:0});
-    document.getElementById('totalDelta').textContent = '13 coins · live' + (failCount ? ' · ' + failCount + ' failed' : '');
-    document.getElementById('biggestHolding').textContent = biggestSym + ' $' + biggestVal.toLocaleString('en',{maximumFractionDigits:0});
+    document.getElementById('totalDelta').textContent = '13 coins · live' + (failCount ? ' · ' + failCount + ' failed' : ' ✓');
+    document.getElementById('biggestHolding').textContent = biggestSym ? biggestSym + ' $' + biggestVal.toLocaleString('en',{maximumFractionDigits:0}) : '—';
     document.getElementById('bestPerformer').textContent = '—';
 
     if (failCount) { err.textContent = '⚠ ' + failCount + ' coin(s) failed — tap Refresh'; err.classList.add('visible'); }
 
     lastFetch = Date.now();
-    document.getElementById('statusText').textContent = '✓ Prices live';
+    document.getElementById('statusText').textContent = failCount ? '⚠ ' + failCount + ' failed' : '✓ All prices live';
     setTimeout(() => { document.getElementById('statusText').textContent = 'Live prices'; }, 3000);
 
     const now = new Date();
@@ -473,93 +423,45 @@ async function fetchAllPrices() {
   }
 }
 
-async function fetchCoinPrice(coin) {
-  const res  = await fetch(PROXY + encodeURIComponent(coin.url), {cache:'no-store'});
-  const data = await res.json();
-  const price = parsePriceFromTitle(data.contents);
-  if (!price) throw new Error('No price for ' + coin.sym);
-  return price;
-}
-
-async function fetchAllPrices() {
-  const btn  = document.getElementById('refreshBtn');
-  const icon = document.getElementById('refreshIcon');
-  const err  = document.getElementById('errorBar');
-
-  btn.disabled = true;
-  icon.classList.add('spin');
-  document.getElementById('statusText').textContent = 'Fetching live prices from Binance…';
-  err.classList.remove('visible');
-
-  try {
-    const results = await Promise.allSettled(COINS.map(c => fetchCoinPrice(c)));
-
-    let total = 0, biggestVal = 0, biggestSym = '', failCount = 0;
-
-    results.forEach((result, i) => {
-      const c = COINS[i];
-      if (result.status === 'rejected') { console.warn('Failed:', c.sym, result.reason); failCount++; return; }
-
-      const price = result.value;
-      const val   = c.coins * price;
-      total += val;
-      if (val > biggestVal) { biggestVal = val; biggestSym = c.sym; }
-
-      const oldEl  = document.getElementById('val-' + c.id);
-      const oldVal = parseFloat(oldEl?.textContent?.replace(/[^0-9.]/g,'')) || 0;
-      flash(c.id, price >= oldVal ? 'up' : 'dn');
-
-      const valEl = document.getElementById('val-' + c.id);
-      const chgEl = document.getElementById('chg-' + c.id);
-      const detEl = document.getElementById('det-' + c.id);
-
-      if (valEl) valEl.textContent = val >= 1000 ? '$' + val.toLocaleString('en',{maximumFractionDigits:0}) : '$' + val.toFixed(2);
-      if (chgEl) { chgEl.textContent = '—'; chgEl.className = 'cchg nt'; }
-      if (detEl) {
-        const p  = price;
-        const ps = p < 0.000001 ? p.toFixed(10) : p < 0.001 ? p.toFixed(9) : p < 1 ? p.toFixed(5) : p < 100 ? p.toFixed(4) : p.toLocaleString('en',{maximumFractionDigits:2});
-        const parts = detEl.textContent.split('·');
-        if (parts.length >= 2) { parts[1] = ' $' + ps; detEl.textContent = parts.join('·'); }
-      }
-    });
-
-    document.getElementById('totalValue').textContent = '$' + total.toLocaleString('en',{maximumFractionDigits:0});
-    document.getElementById('totalDelta').textContent = '13 coins · Binance live' + (failCount ? ' · ' + failCount + ' failed' : '');
-    document.getElementById('biggestHolding').textContent = biggestSym + ' $' + biggestVal.toLocaleString('en',{maximumFractionDigits:0});
-    document.getElementById('bestPerformer').textContent = 'Open Binance';
-
-    if (failCount) { err.textContent = '⚠ ' + failCount + ' coin(s) failed — tap Refresh'; err.classList.add('visible'); }
-
-    lastFetch = Date.now();
-    document.getElementById('statusText').textContent = '✓ Binance prices loaded';
-    setTimeout(() => { document.getElementById('statusText').textContent = 'Live prices'; }, 3000);
-
-    const now = new Date();
-    document.getElementById('lastUpdated').textContent =
-      'Updated: ' + now.toLocaleTimeString('en-MY',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:true}) +
-      ' · ' + now.toLocaleDateString('en-MY',{day:'numeric',month:'short',year:'numeric'});
-    document.getElementById('footerTime').textContent = now.toISOString().slice(0,19).replace('T',' ') + ' UTC';
-
-  } catch(e) {
-    err.textContent = '⚠ Error: ' + e.message;
-    err.classList.add('visible');
-    document.getElementById('statusText').textContent = 'Fetch failed — tap Refresh';
-  } finally {
-    btn.disabled = false;
-    icon.classList.remove('spin');
-  }
-}
-
+// ── AGE TIMER ───────────────────────────────────────────────
 function startAgeTimer() {
-  if (ageTimer) clearInterval(ageTimer);
-  ageTimer = setInterval(updateAgeBar, 1000);
+  if (ageInterval) clearInterval(ageInterval);
+  ageInterval = setInterval(() => {
+    if (!lastFetch) return;
+    const secs = Math.floor((Date.now() - lastFetch) / 1000);
+    const mins = Math.floor(secs / 60);
+    const s    = secs % 60;
+    const bar  = document.getElementById('refreshBar');
+    const t    = new Date(lastFetch).toLocaleTimeString('en-MY',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:true});
+    document.getElementById('ageText').textContent =
+      (secs < 60 ? secs + 's ago' : mins + 'm ' + s + 's ago') + ' · ' + t;
+    if (secs >= 900) {
+      bar.classList.add('stale');
+      document.getElementById('statusText').textContent = 'Prices may be stale';
+    } else {
+      bar.classList.remove('stale');
+    }
+  }, 1000);
 }
 
+// ── AUTO REFRESH ────────────────────────────────────────────
 function startAutoRefresh() {
   if (autoTimer) clearInterval(autoTimer);
   autoTimer = setInterval(fetchAllPrices, 60000);
 }
 
+// ── TOKEN2049 COUNTDOWN ─────────────────────────────────────
+function countdown() {
+  const token2049 = new Date('2026-10-07T00:00:00+08:00');
+  const now  = new Date();
+  const days = Math.max(0, Math.ceil((token2049 - now) / 86400000));
+  const el1  = document.getElementById('daysLeft');
+  const el2  = document.getElementById('countdown');
+  if (el1) el1.textContent = days;
+  if (el2) el2.textContent = days + ' days 🇸🇬';
+}
+
+// ── INIT ────────────────────────────────────────────────────
 countdown();
 fetchAllPrices();
 startAgeTimer();
