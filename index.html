@@ -294,47 +294,31 @@ body{padding-bottom:calc(var(--safe-bot) + 16px)}
 </div>
 
 <script>
-// ── PRICE DATA ──────────────────────────────────────────────
-const COINS = [
-  // Crypto.com Exchange API — routed through allorigins CORS proxy
-  { id:'xrp',   sym:'XRP',   coins:1138,       source:'cdc',  cdcSym:'XRP_USDT'   },
-  { id:'btc',   sym:'BTC',   coins:0.00643189, source:'cdc',  cdcSym:'BTC_USDT'   },
-  { id:'ada',   sym:'ADA',   coins:635,        source:'cdc',  cdcSym:'ADA_USDT'   },
-  { id:'doge',  sym:'DOGE',  coins:509,        source:'cdc',  cdcSym:'DOGE_USDT'  },
-  { id:'link',  sym:'LINK',  coins:3.23,       source:'cdc',  cdcSym:'LINK_USDT'  },
-  { id:'pepe',  sym:'PEPE',  coins:8978610,    source:'cdc',  cdcSym:'PEPE_USDT'  },
-  { id:'pol',   sym:'POL',   coins:234,        source:'cdc',  cdcSym:'POL_USDT'   },
-  { id:'sui',   sym:'SUI',   coins:23,         source:'cdc',  cdcSym:'SUI_USDT'   },
-  { id:'pengu', sym:'PENGU', coins:1059,       source:'cdc',  cdcSym:'PENGU_USDT' },
-  // Page title fetch via allorigins proxy
-  { id:'bnb',   sym:'BNB',   coins:2.59,       source:'page', url:'https://www.blockchain.com/explorer/assets/bnb'           },
-  { id:'kite',  sym:'KITE',  coins:680,        source:'page', url:'https://www.binance.com/en/trade/KITE_USDT?type=spot'     },
-  { id:'id',    sym:'ID',    coins:833,        source:'page', url:'https://www.binance.com/en/trade/ID_USDT?type=spot'       },
-  { id:'pump',  sym:'PUMP',  coins:3667,       source:'page', url:'https://www.binance.com/en/trade/PUMP_USDT?type=spot'     },
-];
+// ── PORTFOLIO DATA ──────────────────────────────────────────
+// CoinGecko free API — CORS enabled, works from any hosted domain
+// Covers all 13 coins in one single API call — fastest and most reliable
+const HOLDINGS = {
+  'ripple':          { id:'xrp',   sym:'XRP',   coins:1138       },
+  'bitcoin':         { id:'btc',   sym:'BTC',   coins:0.00643189 },
+  'cardano':         { id:'ada',   sym:'ADA',   coins:635        },
+  'dogecoin':        { id:'doge',  sym:'DOGE',  coins:509        },
+  'chainlink':       { id:'link',  sym:'LINK',  coins:3.23       },
+  'pepe':            { id:'pepe',  sym:'PEPE',  coins:8978610    },
+  'matic-network':   { id:'pol',   sym:'POL',   coins:234        },
+  'sui':             { id:'sui',   sym:'SUI',   coins:23         },
+  'pudgy-penguins':  { id:'pengu', sym:'PENGU', coins:1059       },
+  'binancecoin':     { id:'bnb',   sym:'BNB',   coins:2.59       },
+  'kite-2':          { id:'kite',  sym:'KITE',  coins:680        },
+  'space-id':        { id:'id',    sym:'ID',    coins:833        },
+  'pump-fun':        { id:'pump',  sym:'PUMP',  coins:3667       },
+};
 
-const PROXY = 'https://api.allorigins.win/get?url=';
+const CG_IDS = Object.keys(HOLDINGS).join(',');
+const CG_URL = 'https://api.coingecko.com/api/v3/simple/price?ids=' + CG_IDS + '&vs_currencies=usd&include_24hr_change=true';
 
-let lastFetch = null;
+let lastFetch   = null;
 let ageInterval = null;
 let autoTimer   = null;
-
-// ── FETCH FUNCTIONS ─────────────────────────────────────────
-async function fetchCdcPrice(sym) {
-  const apiUrl = 'https://api.crypto.com/exchange/v1/public/get-ticker?instrument_name=' + sym;
-  const res    = await fetch(PROXY + encodeURIComponent(apiUrl), {cache:'no-store'});
-  const outer  = await res.json();
-  const data   = JSON.parse(outer.contents);
-  return parseFloat(data.result.data[0].a);
-}
-
-async function fetchPagePrice(url) {
-  const res  = await fetch(PROXY + encodeURIComponent(url), {cache:'no-store'});
-  const data = await res.json();
-  const m    = data.contents.match(/<title>([0-9.]+)/i);
-  if (!m) throw new Error('No price in title for ' + url);
-  return parseFloat(m[1]);
-}
 
 // ── FLASH ANIMATION ─────────────────────────────────────────
 function flash(id, dir) {
@@ -357,37 +341,39 @@ async function fetchAllPrices() {
   err.classList.remove('visible');
 
   try {
-    const results = await Promise.allSettled(
-      COINS.map(c => c.source === 'cdc' ? fetchCdcPrice(c.cdcSym) : fetchPagePrice(c.url))
-    );
+    const res  = await fetch(CG_URL, {cache:'no-store'});
+    if (!res.ok) throw new Error('CoinGecko HTTP ' + res.status);
+    const data = await res.json();
 
     let total = 0, biggestVal = 0, biggestSym = '', failCount = 0;
 
-    results.forEach((result, i) => {
-      const c = COINS[i];
-      if (result.status === 'rejected') {
-        console.warn('Failed:', c.sym, result.reason);
-        failCount++;
-        return;
-      }
+    Object.entries(HOLDINGS).forEach(([cgId, h]) => {
+      const info = data[cgId];
+      if (!info || !info.usd) { failCount++; return; }
 
-      const price = result.value;
-      const val   = c.coins * price;
+      const price = info.usd;
+      const chg   = info.usd_24h_change || 0;
+      const val   = h.coins * price;
       total += val;
-      if (val > biggestVal) { biggestVal = val; biggestSym = c.sym; }
+      if (val > biggestVal) { biggestVal = val; biggestSym = h.sym; }
 
-      const oldEl  = document.getElementById('val-' + c.id);
+      const oldEl  = document.getElementById('val-' + h.id);
       const oldVal = parseFloat(oldEl?.textContent?.replace(/[^0-9.]/g,'')) || 0;
-      flash(c.id, price >= oldVal ? 'up' : 'dn');
+      flash(h.id, price >= oldVal ? 'up' : 'dn');
 
-      const valEl = document.getElementById('val-' + c.id);
-      const chgEl = document.getElementById('chg-' + c.id);
-      const detEl = document.getElementById('det-' + c.id);
+      const valEl = document.getElementById('val-' + h.id);
+      const chgEl = document.getElementById('chg-' + h.id);
+      const detEl = document.getElementById('det-'  + h.id);
 
       if (valEl) valEl.textContent = val >= 1000
         ? '$' + val.toLocaleString('en',{maximumFractionDigits:0})
         : '$' + val.toFixed(2);
-      if (chgEl) { chgEl.textContent = '—'; chgEl.className = 'cchg nt'; }
+
+      if (chgEl) {
+        chgEl.textContent = (chg >= 0 ? '▲' : '▼') + Math.abs(chg).toFixed(2) + '%';
+        chgEl.className   = 'cchg ' + (chg >= 0 ? 'up' : 'dn');
+      }
+
       if (detEl) {
         const p  = price;
         const ps = p < 0.000001 ? p.toFixed(10) : p < 0.001 ? p.toFixed(9) : p < 1 ? p.toFixed(5) : p < 100 ? p.toFixed(4) : p.toLocaleString('en',{maximumFractionDigits:2});
@@ -397,8 +383,8 @@ async function fetchAllPrices() {
     });
 
     document.getElementById('totalValue').textContent = '$' + total.toLocaleString('en',{maximumFractionDigits:0});
-    document.getElementById('totalDelta').textContent = '13 coins · live' + (failCount ? ' · ' + failCount + ' failed' : ' ✓');
-    document.getElementById('biggestHolding').textContent = biggestSym ? biggestSym + ' $' + biggestVal.toLocaleString('en',{maximumFractionDigits:0}) : '—';
+    document.getElementById('totalDelta').textContent = '13 coins · CoinGecko live' + (failCount ? ' · ' + failCount + ' failed' : ' ✓');
+    document.getElementById('biggestHolding').textContent = biggestSym + ' $' + biggestVal.toLocaleString('en',{maximumFractionDigits:0});
     document.getElementById('bestPerformer').textContent = '—';
 
     if (failCount) { err.textContent = '⚠ ' + failCount + ' coin(s) failed — tap Refresh'; err.classList.add('visible'); }
@@ -414,9 +400,10 @@ async function fetchAllPrices() {
     document.getElementById('footerTime').textContent = now.toISOString().slice(0,19).replace('T',' ') + ' UTC';
 
   } catch(e) {
-    err.textContent = '⚠ Error: ' + e.message;
+    err.textContent = '⚠ ' + e.message + ' — tap Refresh to retry';
     err.classList.add('visible');
     document.getElementById('statusText').textContent = 'Fetch failed — tap Refresh';
+    console.error('fetchAllPrices error:', e);
   } finally {
     btn.disabled = false;
     icon.classList.remove('spin');
@@ -453,8 +440,7 @@ function startAutoRefresh() {
 // ── TOKEN2049 COUNTDOWN ─────────────────────────────────────
 function countdown() {
   const token2049 = new Date('2026-10-07T00:00:00+08:00');
-  const now  = new Date();
-  const days = Math.max(0, Math.ceil((token2049 - now) / 86400000));
+  const days = Math.max(0, Math.ceil((token2049 - new Date()) / 86400000));
   const el1  = document.getElementById('daysLeft');
   const el2  = document.getElementById('countdown');
   if (el1) el1.textContent = days;
