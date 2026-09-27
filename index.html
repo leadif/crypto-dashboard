@@ -286,7 +286,7 @@ body{padding-bottom:calc(var(--safe-bot) + 16px)}
 </div>
 
 <div class="footer">
-  <span>⚡ CoinGecko API · Crypto.com Exchange API · auto-refreshes every 60s</span>
+  <span>⚡ Crypto.com API (9 coins) · Binance/blockchain.com (4 coins) · auto-refreshes every 60s</span>
   <span style="display:flex;align-items:center;gap:8px">
     <span style="background:rgba(0,201,255,0.08);border:1px solid rgba(0,201,255,0.2);border-radius:6px;padding:3px 10px;font-size:10px;color:var(--accent);font-weight:600">🔐 TIGER-MOON-74</span>
     <span style="font-family:var(--mono)" id="footerTime"></span>
@@ -295,23 +295,23 @@ body{padding-bottom:calc(var(--safe-bot) + 16px)}
 
 <script>
 const COINS = [
-  { id:'bnb',   cgId:'binancecoin',       coins:2.59,       elSuffix:'bnb'   },
-  { id:'xrp',   cgId:'ripple',            coins:1138,       elSuffix:'xrp'   },
-  { id:'btc',   cgId:'bitcoin',           coins:0.00643189, elSuffix:'btc'   },
-  { id:'ada',   cgId:'cardano',           coins:635,        elSuffix:'ada'   },
-  { id:'kite',  cgId:'kite-2',           coins:680,        elSuffix:'kite'  },
-  { id:'id',    cgId:'space-id',          coins:833,        elSuffix:'id'    },
-  { id:'doge',  cgId:'dogecoin',          coins:509,        elSuffix:'doge'  },
-  { id:'link',  cgId:'chainlink',         coins:3.23,       elSuffix:'link'  },
-  { id:'pepe',  cgId:'pepe',              coins:8978610,    elSuffix:'pepe'  },
-  { id:'pol',   cgId:'matic-network',     coins:234,        elSuffix:'pol'   },
-  { id:'sui',   cgId:'sui',               coins:23,         elSuffix:'sui'   },
-  { id:'pump',  cgId:'pump-fun',          coins:3667,       elSuffix:'pump'  },
-  { id:'pengu', cgId:'pudgy-penguins',    coins:1059,       elSuffix:'pengu' },
+  // Crypto.com Exchange API — real-time, never cached
+  { id:'xrp',   sym:'XRP',   coins:1138,       source:'cdc', cdcSym:'XRP_USDT'   },
+  { id:'btc',   sym:'BTC',   coins:0.00643189, source:'cdc', cdcSym:'BTC_USDT'   },
+  { id:'ada',   sym:'ADA',   coins:635,        source:'cdc', cdcSym:'ADA_USDT'   },
+  { id:'doge',  sym:'DOGE',  coins:509,        source:'cdc', cdcSym:'DOGE_USDT'  },
+  { id:'link',  sym:'LINK',  coins:3.23,       source:'cdc', cdcSym:'LINK_USDT'  },
+  { id:'pepe',  sym:'PEPE',  coins:8978610,    source:'cdc', cdcSym:'PEPE_USDT'  },
+  { id:'pol',   sym:'POL',   coins:234,        source:'cdc', cdcSym:'POL_USDT'   },
+  { id:'sui',   sym:'SUI',   coins:23,         source:'cdc', cdcSym:'SUI_USDT'   },
+  { id:'pengu', sym:'PENGU', coins:1059,       source:'cdc', cdcSym:'PENGU_USDT' },
+  // Page title fetch — Binance/blockchain.com
+  { id:'bnb',   sym:'BNB',   coins:2.59,       source:'page', url:'https://www.blockchain.com/explorer/assets/bnb' },
+  { id:'kite',  sym:'KITE',  coins:680,        source:'page', url:'https://www.binance.com/en/trade/KITE_USDT?type=spot' },
+  { id:'id',    sym:'ID',    coins:833,        source:'page', url:'https://www.binance.com/en/trade/ID_USDT?type=spot'   },
+  { id:'pump',  sym:'PUMP',  coins:3667,       source:'page', url:'https://www.binance.com/en/trade/PUMP_USDT?type=spot' },
 ];
 
-const CG_IDS = COINS.map(c => c.cgId).join(',');
-const CG_URL = `https://api.coingecko.com/api/v3/simple/price?ids=${CG_IDS}&vs_currencies=usd&include_24hr_change=true`;
 
 let lastFetch = null;
 let autoTimer = null;
@@ -359,6 +359,43 @@ function countdown() {
   document.getElementById('countdown').textContent = display + ' days 🇸🇬';
 }
 
+// Extracts price from Binance page title e.g. "86147.66 Trade BTC/USDT Spot..."
+function parsePriceFromTitle(text) {
+  const match = text.match(/^([0-9.]+)/);
+  return match ? parseFloat(match[1]) : null;
+}
+
+// CORS proxy to fetch Binance pages from hosted environment
+const PROXY = 'https://api.allorigins.win/get?url=';
+
+async function fetchCoinPrice(coin) {
+  const res = await fetch(PROXY + encodeURIComponent(coin.url));
+  const data = await res.json();
+  // Price is in the <title> tag of the page
+  const titleMatch = data.contents.match(/<title>([^<]+)<\/title>/i);
+  if (!titleMatch) throw new Error('No title for ' + coin.sym);
+  const price = parsePriceFromTitle(titleMatch[1].trim());
+  if (!price) throw new Error('No price in title for ' + coin.sym);
+  return price;
+}
+
+const CDC_BASE = 'https://api.crypto.com/exchange/v1/public/get-ticker?instrument_name=';
+const PROXY   = 'https://api.allorigins.win/get?url=';
+
+async function fetchCdcPrice(sym) {
+  const res  = await fetch(CDC_BASE + sym, {cache:'no-store'});
+  const data = await res.json();
+  return parseFloat(data.result.data[0].a); // last traded price
+}
+
+async function fetchPagePrice(url) {
+  const res  = await fetch(PROXY + encodeURIComponent(url), {cache:'no-store'});
+  const data = await res.json();
+  const m    = data.contents.match(/<title>([0-9.]+)/i);
+  if (!m) throw new Error('No price in title: ' + url);
+  return parseFloat(m[1]);
+}
+
 async function fetchAllPrices() {
   const btn  = document.getElementById('refreshBtn');
   const icon = document.getElementById('refreshIcon');
@@ -370,54 +407,51 @@ async function fetchAllPrices() {
   err.classList.remove('visible');
 
   try {
-    const res  = await fetch(CG_URL);
-    if (!res.ok) throw new Error('CoinGecko returned ' + res.status);
-    const data = await res.json();
+    const results = await Promise.allSettled(
+      COINS.map(c => c.source === 'cdc' ? fetchCdcPrice(c.cdcSym) : fetchPagePrice(c.url))
+    );
 
-    let total = 0, bestChg = -Infinity, bestSym = '', biggestVal = 0, biggestSym = '';
+    let total = 0, biggestVal = 0, biggestSym = '', failCount = 0;
 
-    COINS.forEach(c => {
-      const info = data[c.cgId];
-      if (!info) return;
-      const price = info.usd;
-      const chg24 = info.usd_24h_change || 0;
+    results.forEach((result, i) => {
+      const c = COINS[i];
+      if (result.status === 'rejected') {
+        console.warn('Failed:', c.sym, result.reason);
+        failCount++;
+        return;
+      }
+
+      const price = result.value;
       const val   = c.coins * price;
       total += val;
+      if (val > biggestVal) { biggestVal = val; biggestSym = c.sym; }
 
-      if (chg24 > bestChg) { bestChg = chg24; bestSym = c.id.toUpperCase(); }
-      if (val > biggestVal) { biggestVal = val; biggestSym = c.id.toUpperCase(); }
+      const oldEl  = document.getElementById('val-' + c.id);
+      const oldVal = parseFloat(oldEl?.textContent?.replace(/[^0-9.]/g,'')) || 0;
+      flash(c.id, price >= oldVal ? 'up' : 'dn');
 
-      const old = parseFloat(document.getElementById('val-' + c.elSuffix)?.textContent?.replace(/[^0-9.]/g,'')) || 0;
-      flash(c.id, price >= old ? 'up' : 'dn');
-
-      const valEl  = document.getElementById('val-'  + c.elSuffix);
-      const chgEl  = document.getElementById('chg-'  + c.elSuffix);
-      const detEl  = document.getElementById('det-'  + c.elSuffix);
+      const valEl = document.getElementById('val-' + c.id);
+      const chgEl = document.getElementById('chg-' + c.id);
+      const detEl = document.getElementById('det-' + c.id);
 
       if (valEl) valEl.textContent = val >= 1000
         ? '$' + val.toLocaleString('en',{maximumFractionDigits:0})
         : '$' + val.toFixed(2);
-
-      if (chgEl) {
-        chgEl.textContent = (chg24 >= 0 ? '▲' : '▼') + Math.abs(chg24).toFixed(2) + '%';
-        chgEl.className   = 'cchg ' + (chg24 >= 0 ? 'up' : 'dn');
-      }
-
+      if (chgEl) { chgEl.textContent = '—'; chgEl.className = 'cchg nt'; }
       if (detEl) {
+        const p  = price;
+        const ps = p < 0.000001 ? p.toFixed(10) : p < 0.001 ? p.toFixed(9) : p < 1 ? p.toFixed(5) : p < 100 ? p.toFixed(4) : p.toLocaleString('en',{maximumFractionDigits:2});
         const parts = detEl.textContent.split('·');
-        if (parts.length >= 2) {
-          const p = price;
-          const ps = p < 0.000001 ? p.toFixed(10) : p < 0.001 ? p.toFixed(9) : p < 1 ? p.toFixed(5) : p < 100 ? p.toFixed(4) : p.toLocaleString('en',{maximumFractionDigits:2});
-          parts[1] = ' $' + ps;
-          detEl.textContent = parts.join('·');
-        }
+        if (parts.length >= 2) { parts[1] = ' $' + ps; detEl.textContent = parts.join('·'); }
       }
     });
 
     document.getElementById('totalValue').textContent = '$' + total.toLocaleString('en',{maximumFractionDigits:0});
-    document.getElementById('totalDelta').textContent = '13 coins · refreshed just now';
-    document.getElementById('bestPerformer').textContent = bestSym + (bestChg >= 0 ? ' ▲' : ' ▼') + Math.abs(bestChg).toFixed(2) + '%';
+    document.getElementById('totalDelta').textContent = '13 coins · live' + (failCount ? ' · ' + failCount + ' failed' : '');
     document.getElementById('biggestHolding').textContent = biggestSym + ' $' + biggestVal.toLocaleString('en',{maximumFractionDigits:0});
+    document.getElementById('bestPerformer').textContent = '—';
+
+    if (failCount) { err.textContent = '⚠ ' + failCount + ' coin(s) failed — tap Refresh'; err.classList.add('visible'); }
 
     lastFetch = Date.now();
     document.getElementById('statusText').textContent = '✓ Prices live';
@@ -427,13 +461,89 @@ async function fetchAllPrices() {
     document.getElementById('lastUpdated').textContent =
       'Updated: ' + now.toLocaleTimeString('en-MY',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:true}) +
       ' · ' + now.toLocaleDateString('en-MY',{day:'numeric',month:'short',year:'numeric'});
-    document.getElementById('footerTime').textContent =
-      now.toISOString().slice(0,19).replace('T',' ') + ' UTC';
+    document.getElementById('footerTime').textContent = now.toISOString().slice(0,19).replace('T',' ') + ' UTC';
 
   } catch(e) {
-    err.textContent = '⚠ Could not fetch prices: ' + e.message + ' — will retry in 60s';
+    err.textContent = '⚠ Error: ' + e.message;
     err.classList.add('visible');
-    document.getElementById('statusText').textContent = 'Fetch failed — retrying soon';
+    document.getElementById('statusText').textContent = 'Fetch failed — tap Refresh';
+  } finally {
+    btn.disabled = false;
+    icon.classList.remove('spin');
+  }
+}
+
+async function fetchCoinPrice(coin) {
+  const res  = await fetch(PROXY + encodeURIComponent(coin.url), {cache:'no-store'});
+  const data = await res.json();
+  const price = parsePriceFromTitle(data.contents);
+  if (!price) throw new Error('No price for ' + coin.sym);
+  return price;
+}
+
+async function fetchAllPrices() {
+  const btn  = document.getElementById('refreshBtn');
+  const icon = document.getElementById('refreshIcon');
+  const err  = document.getElementById('errorBar');
+
+  btn.disabled = true;
+  icon.classList.add('spin');
+  document.getElementById('statusText').textContent = 'Fetching live prices from Binance…';
+  err.classList.remove('visible');
+
+  try {
+    const results = await Promise.allSettled(COINS.map(c => fetchCoinPrice(c)));
+
+    let total = 0, biggestVal = 0, biggestSym = '', failCount = 0;
+
+    results.forEach((result, i) => {
+      const c = COINS[i];
+      if (result.status === 'rejected') { console.warn('Failed:', c.sym, result.reason); failCount++; return; }
+
+      const price = result.value;
+      const val   = c.coins * price;
+      total += val;
+      if (val > biggestVal) { biggestVal = val; biggestSym = c.sym; }
+
+      const oldEl  = document.getElementById('val-' + c.id);
+      const oldVal = parseFloat(oldEl?.textContent?.replace(/[^0-9.]/g,'')) || 0;
+      flash(c.id, price >= oldVal ? 'up' : 'dn');
+
+      const valEl = document.getElementById('val-' + c.id);
+      const chgEl = document.getElementById('chg-' + c.id);
+      const detEl = document.getElementById('det-' + c.id);
+
+      if (valEl) valEl.textContent = val >= 1000 ? '$' + val.toLocaleString('en',{maximumFractionDigits:0}) : '$' + val.toFixed(2);
+      if (chgEl) { chgEl.textContent = '—'; chgEl.className = 'cchg nt'; }
+      if (detEl) {
+        const p  = price;
+        const ps = p < 0.000001 ? p.toFixed(10) : p < 0.001 ? p.toFixed(9) : p < 1 ? p.toFixed(5) : p < 100 ? p.toFixed(4) : p.toLocaleString('en',{maximumFractionDigits:2});
+        const parts = detEl.textContent.split('·');
+        if (parts.length >= 2) { parts[1] = ' $' + ps; detEl.textContent = parts.join('·'); }
+      }
+    });
+
+    document.getElementById('totalValue').textContent = '$' + total.toLocaleString('en',{maximumFractionDigits:0});
+    document.getElementById('totalDelta').textContent = '13 coins · Binance live' + (failCount ? ' · ' + failCount + ' failed' : '');
+    document.getElementById('biggestHolding').textContent = biggestSym + ' $' + biggestVal.toLocaleString('en',{maximumFractionDigits:0});
+    document.getElementById('bestPerformer').textContent = 'Open Binance';
+
+    if (failCount) { err.textContent = '⚠ ' + failCount + ' coin(s) failed — tap Refresh'; err.classList.add('visible'); }
+
+    lastFetch = Date.now();
+    document.getElementById('statusText').textContent = '✓ Binance prices loaded';
+    setTimeout(() => { document.getElementById('statusText').textContent = 'Live prices'; }, 3000);
+
+    const now = new Date();
+    document.getElementById('lastUpdated').textContent =
+      'Updated: ' + now.toLocaleTimeString('en-MY',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:true}) +
+      ' · ' + now.toLocaleDateString('en-MY',{day:'numeric',month:'short',year:'numeric'});
+    document.getElementById('footerTime').textContent = now.toISOString().slice(0,19).replace('T',' ') + ' UTC';
+
+  } catch(e) {
+    err.textContent = '⚠ Error: ' + e.message;
+    err.classList.add('visible');
+    document.getElementById('statusText').textContent = 'Fetch failed — tap Refresh';
   } finally {
     btn.disabled = false;
     icon.classList.remove('spin');
