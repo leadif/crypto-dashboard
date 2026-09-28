@@ -15,17 +15,15 @@
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html,body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100%;-webkit-font-smoothing:antialiased}
-body{padding-bottom:calc(var(--safe-bot) + 16px)}
+body{padding-bottom:calc(var(--safe-bot)+16px)}
 
-/* HEADER */
-.header{padding:calc(var(--safe-top) + 16px) 16px 0;max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+.header{padding:calc(var(--safe-top)+16px) 16px 0;max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
 .header h1{font-size:20px;font-weight:600;letter-spacing:-.02em}
 .header p{font-size:12px;color:var(--text2);margin-top:2px}
 .live-pill{display:flex;align-items:center;gap:6px;background:rgba(0,201,255,0.08);border:1px solid rgba(0,201,255,0.25);border-radius:20px;padding:5px 12px;font-size:11px;font-weight:500;color:var(--accent)}
 .live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;flex-shrink:0}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.85)}}
 
-/* TOTAL BANNER */
 .total-banner{margin:16px auto 0;max-width:1200px;padding:0 16px}
 .total-inner{background:linear-gradient(135deg,var(--bg2) 0%,#0D1929 100%);border:1px solid var(--border);border-radius:16px;padding:20px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;position:relative;overflow:hidden}
 .total-inner::before{content:'';position:absolute;top:-40px;right:-40px;width:180px;height:180px;background:radial-gradient(circle,rgba(0,201,255,0.06) 0%,transparent 70%);pointer-events:none}
@@ -39,11 +37,9 @@ body{padding-bottom:calc(var(--safe-bot) + 16px)}
 .stat-val.green{color:var(--green)}
 .stat-val.accent{color:var(--accent)}
 
-/* MAIN GRID */
 .main-grid{max-width:1200px;margin:16px auto 0;padding:0 16px;display:grid;grid-template-columns:1fr;gap:12px}
 @media(min-width:900px){.main-grid{grid-template-columns:1.2fr 0.8fr;align-items:start}}
 
-/* PANEL */
 .panel{background:var(--bg2);border:1px solid var(--border);border-radius:16px;overflow:hidden}
 .panel-header{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
 .panel-title{font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.06em}
@@ -51,27 +47,22 @@ body{padding-bottom:calc(var(--safe-bot) + 16px)}
 .panel-badge.green{background:rgba(16,217,128,0.1);color:var(--green);border-color:rgba(16,217,128,0.2)}
 .panel-badge.yellow{background:rgba(255,184,0,0.1);color:var(--yellow);border-color:rgba(255,184,0,0.2)}
 
-/* COIN ROW */
-.coin-row{padding:10px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.coin-row{padding:10px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
 .coin-row:last-child{border-bottom:none}
 .coin-row.warn{border-left:3px solid var(--yellow)}
 .clogo{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden}
 .cinfo{flex:1;min-width:0}
 .cname{font-size:13px;font-weight:500;color:var(--text);display:flex;align-items:center;gap:5px;flex-wrap:wrap}
 .ctag{font-size:9px;padding:1px 5px;border-radius:4px;font-weight:600;background:rgba(0,201,255,0.15);color:#00C9FF}
-.cwarn{background:rgba(255,184,0,0.15);color:#FFB800}
+.cwarn{background:rgba(255,184,0,0.15);color:#FFB800;font-size:9px;padding:1px 5px;border-radius:4px;font-weight:600}
 .cdetail{font-size:11px;color:var(--text2);margin-top:1px}
 .cbar{height:3px;background:var(--bg3);border-radius:2px;margin-top:4px;overflow:hidden}
 .cbar-fill{height:100%;border-radius:2px}
 
-/* TRADINGVIEW TICKER */
-.tv-wrap{flex-shrink:0;width:140px;height:46px;overflow:hidden;border-radius:8px;background:var(--bg3)}
-.tv-wrap iframe{border:none;width:140px;height:46px}
+/* TradingView Single Ticker */
+.tv-price{flex-shrink:0;width:150px;min-height:44px;overflow:hidden}
+.tv-price .tradingview-widget-container{height:44px}
 
-/* PORTFOLIO % */
-.cpct{font-size:10px;color:var(--text3);margin-top:1px;text-align:right}
-
-/* RIGHT PANELS */
 .target-row{padding:11px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
 .target-row:last-child{border-bottom:none}
 .target-coin{font-size:12px;font-weight:600;color:var(--text);width:50px;flex-shrink:0}
@@ -87,310 +78,252 @@ body{padding-bottom:calc(var(--safe-bot) + 16px)}
 .sl-bar{width:60px;height:4px;background:var(--bg3);border-radius:2px;overflow:hidden}
 .sl-fill{height:100%;border-radius:2px}
 
-/* FOOTER */
 .footer{max-width:1200px;margin:12px auto 0;padding:0 16px 8px;font-size:10px;color:var(--text3);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px}
-
 ::-webkit-scrollbar{width:4px}
 ::-webkit-scrollbar-track{background:var(--bg)}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
-@media(max-width:400px){.total-value{font-size:28px}.total-stats{gap:14px}.tv-wrap{width:120px}.tv-wrap iframe{width:120px}}
+@media(max-width:400px){.total-value{font-size:28px}.total-stats{gap:14px}.tv-price{width:130px}}
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
 <div class="header">
-  <div>
-    <h1>Fidael's Crypto Portfolio</h1>
-    <p id="lastUpdated">TradingView live prices · Binance feed</p>
-  </div>
+  <div><h1>Fidael's Crypto Portfolio</h1><p id="lastUpdated">TradingView · Binance live feed</p></div>
   <div class="live-pill"><div class="live-dot"></div>TradingView live</div>
 </div>
 
-<!-- TOTAL BANNER -->
-<div class="total-banner">
-<div class="total-inner">
+<div class="total-banner"><div class="total-inner">
   <div>
     <div class="total-label">Total portfolio value</div>
     <div class="total-value">~$4,685</div>
-    <div class="total-delta">13 coins · prices live via TradingView</div>
+    <div class="total-delta">13 coins · prices live via TradingView · Binance feed</div>
   </div>
   <div class="total-stats">
     <div class="stat-item"><div class="stat-label">Biggest holding</div><div class="stat-val">BNB</div></div>
     <div class="stat-item"><div class="stat-label">On Binance Earn</div><div class="stat-val green">XRP 💰</div></div>
     <div class="stat-item"><div class="stat-label">TOKEN2049 Singapore</div><div class="stat-val accent" id="countdown">— days 🇸🇬</div></div>
   </div>
-</div>
-</div>
+</div></div>
 
-<!-- MAIN GRID -->
 <div class="main-grid">
+<div class="panel">
+  <div class="panel-header"><span class="panel-title">Your Holdings</span><span class="panel-badge">13 coins · Binance live</span></div>
 
-  <!-- LEFT: HOLDINGS -->
+  <!-- BNB -->
+  <div class="coin-row">
+    <div class="clogo" style="background:#F3BA2F"><svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 2L8.5 5.5 10 7l2-2 2 2 1.5-1.5L12 2zM6.5 8L5 9.5 6.5 11 8 9.5 6.5 8zm11 0L16 9.5l1.5 1.5 1.5-1.5L17.5 8zM12 8l-4 4 4 4 4-4-4-4zm0 2.5L13.5 12 12 13.5 10.5 12 12 10.5zM6.5 13L5 14.5 6.5 16l1.5-1.5L6.5 13zm11 0L16 14.5l1.5 1.5 1.5-1.5L17.5 13zM12 17l-1.5 1.5 1.5 1.5 1.5-1.5L12 17z"/></svg></div>
+    <div class="cinfo"><div class="cname">BNB <span class="ctag">⚡ live</span></div><div class="cdetail">2.59 coins · 50.7%</div><div class="cbar"><div class="cbar-fill" style="width:100%;background:#F3BA2F"></div></div></div>
+    <div class="tv-price"><div class="tradingview-widget-container"><div class="tradingview-widget-container__widget" id="tw-bnb"></div></div></div>
+  </div>
+
+  <!-- XRP -->
+  <div class="coin-row">
+    <div class="clogo" style="background:#00aae4"><svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M7 3L12 8l5-5h3l-6.5 6.5c-.83.83-2.17.83-3 0L4 3h3zm10 18l-5-5-5 5H4l6.5-6.5c.83-.83 2.17-.83 3 0L20 21h-3z"/></svg></div>
+    <div class="cinfo"><div class="cname">XRP <span class="ctag">⚡ live</span></div><div class="cdetail">1,138 coins · Binance Earn 💰 long hold</div><div class="cbar"><div class="cbar-fill" style="width:84%;background:#00aae4"></div></div></div>
+    <div class="tv-price"><div class="tradingview-widget-container"><div class="tradingview-widget-container__widget" id="tw-xrp"></div></div></div>
+  </div>
+
+  <!-- BTC -->
+  <div class="coin-row">
+    <div class="clogo" style="background:#F7931A"><svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M14.5 10.17c.34-.2.58-.53.58-.97 0-.9-.72-1.2-1.83-1.2H11v2.4h2.25c.5 0 1-.06 1.25-.23zm.25 2.46c0-.97-.72-1.33-1.92-1.33H11v2.7h1.83c1.3 0 1.92-.5 1.92-1.37zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm2.38 11.45c0 1.4-1.07 2.05-2.63 2.05H9.5v2h-1v-2H7.5v-7h1v-2h1.5v2h2.75c1.5 0 2.38.72 2.38 2 0 .65-.3 1.15-.75 1.47.67.33 1 .9 1 1.48z"/></svg></div>
+    <div class="cinfo"><div class="cname">Bitcoin (BTC) <span class="ctag">⚡ live</span></div><div class="cdetail">0.00643 coins · 13.6%</div><div class="cbar"><div class="cbar-fill" style="width:27%;background:#F7931A"></div></div></div>
+    <div class="tv-price"><div class="tradingview-widget-container"><div class="tradingview-widget-container__widget" id="tw-btc"></div></div></div>
+  </div>
+
+  <!-- ADA -->
+  <div class="coin-row">
+    <div class="clogo" style="background:#0033AD"><svg width="18" height="18" viewBox="0 0 24 24" fill="white"><circle cx="12" cy="4" r="1.5"/><circle cx="12" cy="20" r="1.5"/><circle cx="4" cy="8" r="1.5"/><circle cx="20" cy="8" r="1.5"/><circle cx="4" cy="16" r="1.5"/><circle cx="20" cy="16" r="1.5"/><circle cx="7" cy="6" r="1"/><circle cx="17" cy="6" r="1"/><circle cx="7" cy="18" r="1"/><circle cx="17" cy="18" r="1"/><circle cx="12" cy="12" r="2"/></svg></div>
+    <div class="cinfo"><div class="cname">Cardano (ADA) <span class="ctag">⚡ live</span></div><div class="cdetail">635 coins · 4.0% · target $0.263</div><div class="cbar"><div class="cbar-fill" style="width:8%;background:#0033AD"></div></div></div>
+    <div class="tv-price"><div class="tradingview-widget-container"><div class="tradingview-widget-container__widget" id="tw-ada"></div></div></div>
+  </div>
+
+  <!-- KITE -->
+  <div class="coin-row warn">
+    <div class="clogo" style="background:#FF6B2B"><svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M12 2L4 12l8 10 8-10L12 2zm0 3.5L17.5 12 12 18.5 6.5 12 12 5.5z"/></svg></div>
+    <div class="cinfo"><div class="cname">KITE <span class="cwarn">⚠ stop $0.130</span> <span class="ctag">⚡ live</span></div><div class="cdetail">680 coins · Sell 340@$0.160 · Sell 340@$0.170</div><div class="cbar"><div class="cbar-fill" style="width:3%;background:#FF6B2B"></div></div></div>
+    <div class="tv-price"><div class="tradingview-widget-container"><div class="tradingview-widget-container__widget" id="tw-kite"></div></div></div>
+  </div>
+
+  <!-- ID -->
+  <div class="coin-row">
+    <div class="clogo" style="background:#2B6CB0"><svg width="18" height="18" viewBox="0 0 24 24" fill="white"><rect x="3" y="4" width="18" height="16" rx="2" stroke="white" stroke-width="1.5" fill="none"/><circle cx="9" cy="10" r="2" fill="white"/><line x1="14" y1="9" x2="19" y2="9" stroke="white" stroke-width="1.5"/><line x1="14" y1="12" x2="19" y2="12" stroke="white" stroke-width="1.5"/></svg></div>
+    <div class="cinfo"><div class="cname">Space ID (ID) <span class="ctag">⚡ live</span></div><div class="cdetail">833 coins · 0.8%</div><div class="cbar"><div class="cbar-fill" style="width:1%;background:#2B6CB0"></div></div></div>
+    <div class="tv-price"><div class="tradingview-widget-container"><div class="tradingview-widget-container__widget" id="tw-id"></div></div></div>
+  </div>
+
+  <!-- DOGE -->
+  <div class="coin-row">
+    <div class="clogo" style="background:#C2A633"><svg width="20" height="20" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#C2A633"/><text x="12" y="16.5" text-anchor="middle" font-size="12" font-weight="bold" fill="white" font-family="Arial">Ð</text></svg></div>
+    <div class="cinfo"><div class="cname">Dogecoin (DOGE) <span class="ctag">⚡ live</span></div><div class="cdetail">509 coins · stop $0.088 · target $0.115</div><div class="cbar"><div class="cbar-fill" style="width:1.5%;background:#C2A633"></div></div></div>
+    <div class="tv-price"><div class="tradingview-widget-container"><div class="tradingview-widget-container__widget" id="tw-doge"></div></div></div>
+  </div>
+
+  <!-- LINK -->
+  <div class="coin-row">
+    <div class="clogo" style="background:#2A5ADA"><svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M12 2l-2.5 1.5L7 9l2.5 1.5L12 9l2.5 1.5L17 9l-2.5-5.5L12 2zM7 10.5L4.5 12 4 16.5 7 18l2.5-1.5v-3L7 10.5zm10 0l-2.5 3v3L17 18l3-1.5-.5-4.5L17 10.5zM9.5 13.5v3l2.5 1.5 2.5-1.5v-3L12 12l-2.5 1.5z"/></svg></div>
+    <div class="cinfo"><div class="cname">Chainlink (LINK) <span class="ctag">⚡ live</span></div><div class="cdetail">3.23 coins · bought $13.008 · target $16</div><div class="cbar"><div class="cbar-fill" style="width:1.2%;background:#2A5ADA"></div></div></div>
+    <div class="tv-price"><div class="tradingview-widget-container"><div class="tradingview-widget-container__widget" id="tw-link"></div></div></div>
+  </div>
+
+  <!-- PEPE -->
+  <div class="coin-row">
+    <div class="clogo" style="background:#3a7d44"><svg width="20" height="20" viewBox="0 0 24 24"><ellipse cx="12" cy="13" rx="8" ry="7" fill="#3a7d44"/><ellipse cx="12" cy="13" rx="5" ry="4.5" fill="#5a9e5a"/><circle cx="9.5" cy="11" r="1.8" fill="white"/><circle cx="14.5" cy="11" r="1.8" fill="white"/><circle cx="9.5" cy="11" r="0.9" fill="#111"/><circle cx="14.5" cy="11" r="0.9" fill="#111"/><path d="M9.5 15.5 Q12 17 14.5 15.5" stroke="white" stroke-width="1" fill="none" stroke-linecap="round"/></svg></div>
+    <div class="cinfo"><div class="cname">Pepe (PEPE) <span class="ctag">⚡ live</span></div><div class="cdetail">8,978,610 coins · 1.0%</div><div class="cbar"><div class="cbar-fill" style="width:1%;background:#3a7d44"></div></div></div>
+    <div class="tv-price"><div class="tradingview-widget-container"><div class="tradingview-widget-container__widget" id="tw-pepe"></div></div></div>
+  </div>
+
+  <!-- POL -->
+  <div class="coin-row">
+    <div class="clogo" style="background:#8247E5"><svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M16.5 9.5l-4.5-2.5-4.5 2.5v5l4.5 2.5 4.5-2.5v-5zm-4.5 5.5l-3-1.7V11l3 1.7 3-1.7v2.3l-3 1.7z"/></svg></div>
+    <div class="cinfo"><div class="cname">POL (Polygon) <span class="ctag">⚡ live</span></div><div class="cdetail">234 coins · 0.6%</div><div class="cbar"><div class="cbar-fill" style="width:0.7%;background:#8247E5"></div></div></div>
+    <div class="tv-price"><div class="tradingview-widget-container"><div class="tradingview-widget-container__widget" id="tw-pol"></div></div></div>
+  </div>
+
+  <!-- SUI -->
+  <div class="coin-row">
+    <div class="clogo" style="background:#4DA2FF"><svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M12 3C9 3 6.5 5.5 6.5 9c0 2 1 3.8 2.5 5L12 22l3-8c1.5-1.2 2.5-3 2.5-5 0-3.5-2.5-6-6-6zm0 8a2.5 2.5 0 110-5 2.5 2.5 0 010 5z"/></svg></div>
+    <div class="cinfo"><div class="cname">Sui (SUI) <span class="ctag">⚡ live</span></div><div class="cdetail">23 coins · stop $0.88 · target $1.265</div><div class="cbar"><div class="cbar-fill" style="width:0.6%;background:#4DA2FF"></div></div></div>
+    <div class="tv-price"><div class="tradingview-widget-container"><div class="tradingview-widget-container__widget" id="tw-sui"></div></div></div>
+  </div>
+
+  <!-- PUMP -->
+  <div class="coin-row">
+    <div class="clogo" style="background:#00C853"><svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M3 20l4.5-9 4 4.5 4-10.5 4.5 15H3z"/></svg></div>
+    <div class="cinfo"><div class="cname">Pump.fun (PUMP) <span class="ctag">⚡ live</span></div><div class="cdetail">3,667 coins · 0.4%</div><div class="cbar"><div class="cbar-fill" style="width:0.4%;background:#00C853"></div></div></div>
+    <div class="tv-price"><div class="tradingview-widget-container"><div class="tradingview-widget-container__widget" id="tw-pump"></div></div></div>
+  </div>
+
+  <!-- PENGU -->
+  <div class="coin-row">
+    <div class="clogo" style="background:#4A90D9"><svg width="20" height="20" viewBox="0 0 24 24"><ellipse cx="12" cy="14" rx="6" ry="7" fill="#1a1a1a"/><ellipse cx="12" cy="14.5" rx="3.5" ry="4.5" fill="white"/><circle cx="10" cy="11.5" r="1.2" fill="white"/><circle cx="14" cy="11.5" r="1.2" fill="white"/><circle cx="10" cy="11.5" r="0.6" fill="#1a1a1a"/><circle cx="14" cy="11.5" r="0.6" fill="#1a1a1a"/><ellipse cx="12" cy="8" rx="4" ry="3.2" fill="#1a1a1a"/><ellipse cx="12" cy="18" rx="2.5" ry="1.2" fill="#FF8C00" opacity="0.9"/></svg></div>
+    <div class="cinfo"><div class="cname">Pudgy Penguins (PENGU) <span class="ctag">⚡ live</span></div><div class="cdetail">1,059 coins · 0.3%</div><div class="cbar"><div class="cbar-fill" style="width:0.3%;background:#4A90D9"></div></div></div>
+    <div class="tv-price"><div class="tradingview-widget-container"><div class="tradingview-widget-container__widget" id="tw-pengu"></div></div></div>
+  </div>
+
+</div><!-- end holdings panel -->
+
+<!-- RIGHT COLUMN -->
+<div style="display:flex;flex-direction:column;gap:12px">
+
   <div class="panel">
-    <div class="panel-header">
-      <span class="panel-title">Your Holdings</span>
-      <span class="panel-badge">13 coins · Binance live</span>
+    <div class="panel-header"><span class="panel-title">Target Tracker</span><span class="panel-badge green">Active</span></div>
+    <div class="target-row"><div class="target-coin">KITE</div><div class="target-track"><div class="target-fill" style="width:68%;background:linear-gradient(90deg,#FF6B2B,#FFB800)"><div class="target-tip" style="background:#FFB800"></div></div></div><div class="target-info"><div class="target-pct" style="color:var(--yellow)">68%</div><div class="target-label">to $0.160</div></div></div>
+    <div class="target-row"><div class="target-coin">ADA</div><div class="target-track"><div class="target-fill" style="width:72%;background:linear-gradient(90deg,#0033AD,#4A6FE3)"><div class="target-tip" style="background:#4A6FE3"></div></div></div><div class="target-info"><div class="target-pct up">72%</div><div class="target-label">to $0.263</div></div></div>
+    <div class="target-row"><div class="target-coin">DOGE</div><div class="target-track"><div class="target-fill" style="width:59%;background:linear-gradient(90deg,#C2A633,#FFD700)"><div class="target-tip" style="background:#FFD700"></div></div></div><div class="target-info"><div class="target-pct" style="color:var(--yellow)">59%</div><div class="target-label">to $0.115</div></div></div>
+    <div class="target-row"><div class="target-coin">LINK</div><div class="target-track"><div class="target-fill" style="width:14%;background:linear-gradient(90deg,#2A5ADA,#00C9FF)"><div class="target-tip" style="background:#00C9FF"></div></div></div><div class="target-info"><div class="target-pct" style="color:var(--text2)">14%</div><div class="target-label">to $16.00</div></div></div>
+    <div class="target-row"><div class="target-coin">SUI</div><div class="target-track"><div class="target-fill" style="width:50%;background:linear-gradient(90deg,#4DA2FF,#00C9FF)"><div class="target-tip" style="background:#00C9FF"></div></div></div><div class="target-info"><div class="target-pct up">50%</div><div class="target-label">to $1.265</div></div></div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-header"><span class="panel-title">Stop Losses</span><span class="panel-badge">Protected</span></div>
+    <div style="padding:12px 18px;display:flex;flex-direction:column;gap:10px">
+      <div class="sl-row"><span style="color:var(--text2);width:50px">KITE</span><div style="display:flex;align-items:center;gap:8px;flex:1;justify-content:flex-end"><span style="color:var(--text2);font-family:var(--mono);font-size:12px">$0.130</span><div class="sl-bar"><div class="sl-fill" style="width:85%;background:var(--yellow)"></div></div><span style="color:var(--yellow);font-size:11px;width:50px">Watch ⚠</span></div></div>
+      <div class="sl-row"><span style="color:var(--text2);width:50px">DOGE</span><div style="display:flex;align-items:center;gap:8px;flex:1;justify-content:flex-end"><span style="color:var(--text2);font-family:var(--mono);font-size:12px">$0.088</span><div class="sl-bar"><div class="sl-fill" style="width:40%;background:var(--green)"></div></div><span style="color:var(--green);font-size:11px;width:50px">Safe ✓</span></div></div>
+      <div class="sl-row"><span style="color:var(--text2);width:50px">LINK</span><div style="display:flex;align-items:center;gap:8px;flex:1;justify-content:flex-end"><span style="color:var(--text2);font-family:var(--mono);font-size:12px">$12.00</span><div class="sl-bar"><div class="sl-fill" style="width:20%;background:var(--green)"></div></div><span style="color:var(--green);font-size:11px;width:50px">Safe ✓</span></div></div>
+      <div class="sl-row"><span style="color:var(--text2);width:50px">SUI</span><div style="display:flex;align-items:center;gap:8px;flex:1;justify-content:flex-end"><span style="color:var(--text2);font-family:var(--mono);font-size:12px">$0.880</span><div class="sl-bar"><div class="sl-fill" style="width:15%;background:var(--green)"></div></div><span style="color:var(--green);font-size:11px;width:50px">Safe ✓</span></div></div>
     </div>
+  </div>
 
-    <!-- BNB -->
-    <div class="coin-row">
-      <div class="clogo" style="background:#F3BA2F"><svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 2L8.5 5.5 10 7l2-2 2 2 1.5-1.5L12 2zM6.5 8L5 9.5 6.5 11 8 9.5 6.5 8zm11 0L16 9.5l1.5 1.5 1.5-1.5L17.5 8zM12 8l-4 4 4 4 4-4-4-4zm0 2.5L13.5 12 12 13.5 10.5 12 12 10.5zM6.5 13L5 14.5 6.5 16l1.5-1.5L6.5 13zm11 0L16 14.5l1.5 1.5 1.5-1.5L17.5 13zM12 17l-1.5 1.5 1.5 1.5 1.5-1.5L12 17z"/></svg></div>
-      <div class="cinfo">
-        <div class="cname">BNB <span class="ctag">⚡ live</span></div>
-        <div class="cdetail">2.59 coins · 50.7% of portfolio</div>
-        <div class="cbar"><div class="cbar-fill" style="width:100%;background:#F3BA2F"></div></div>
-      </div>
-      <div class="tv-wrap">
-        <iframe src="https://www.tradingview.com/widgetembed/?frameElementId=tv_bnb&symbol=BINANCE%3ABNBUSDT&interval=1&hidesidetoolbar=1&symboledit=0&saveimage=0&toolbarbg=0A0E1A&theme=dark&style=9&timezone=Asia%2FKuala_Lumpur&withdateranges=0&showpopupbutton=0&studies=[]&hideideas=1&hide_top_toolbar=1&hide_legend=1&hide_volume=1&hotlist=0&calendar=0&news=[]&widgetbar_width=0&linecolor=%2300C9FF&fontsize=12" allowtransparency="true" scrolling="no"></iframe>
-      </div>
-    </div>
-
-    <!-- XRP -->
-    <div class="coin-row">
-      <div class="clogo" style="background:#00aae4"><svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M7 3L12 8l5-5h3l-6.5 6.5c-.83.83-2.17.83-3 0L4 3h3zm10 18l-5-5-5 5H4l6.5-6.5c.83-.83 2.17-.83 3 0L20 21h-3z"/></svg></div>
-      <div class="cinfo">
-        <div class="cname">XRP <span class="ctag">⚡ live</span></div>
-        <div class="cdetail">1,138 coins · Binance Earn 💰 long hold</div>
-        <div class="cbar"><div class="cbar-fill" style="width:84%;background:#00aae4"></div></div>
-      </div>
-      <div class="tv-wrap">
-        <iframe src="https://www.tradingview.com/widgetembed/?frameElementId=tv_xrp&symbol=BINANCE%3AXRPUSDT&interval=1&hidesidetoolbar=1&symboledit=0&saveimage=0&toolbarbg=0A0E1A&theme=dark&style=9&timezone=Asia%2FKuala_Lumpur&withdateranges=0&showpopupbutton=0&studies=[]&hideideas=1&hide_top_toolbar=1&hide_legend=1&hide_volume=1&hotlist=0&calendar=0&news=[]&widgetbar_width=0&linecolor=%2300C9FF&fontsize=12" allowtransparency="true" scrolling="no"></iframe>
-      </div>
-    </div>
-
-    <!-- BTC -->
-    <div class="coin-row">
-      <div class="clogo" style="background:#F7931A"><svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M14.5 10.17c.34-.2.58-.53.58-.97 0-.9-.72-1.2-1.83-1.2H11v2.4h2.25c.5 0 1-.06 1.25-.23zm.25 2.46c0-.97-.72-1.33-1.92-1.33H11v2.7h1.83c1.3 0 1.92-.5 1.92-1.37zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm2.38 11.45c0 1.4-1.07 2.05-2.63 2.05H9.5v2h-1v-2H7.5v-7h1v-2h1.5v2h2.75c1.5 0 2.38.72 2.38 2 0 .65-.3 1.15-.75 1.47.67.33 1 .9 1 1.48z"/></svg></div>
-      <div class="cinfo">
-        <div class="cname">Bitcoin (BTC) <span class="ctag">⚡ live</span></div>
-        <div class="cdetail">0.00643 coins · 13.6%</div>
-        <div class="cbar"><div class="cbar-fill" style="width:27%;background:#F7931A"></div></div>
-      </div>
-      <div class="tv-wrap">
-        <iframe src="https://www.tradingview.com/widgetembed/?frameElementId=tv_btc&symbol=BINANCE%3ABTCUSDT&interval=1&hidesidetoolbar=1&symboledit=0&saveimage=0&toolbarbg=0A0E1A&theme=dark&style=9&timezone=Asia%2FKuala_Lumpur&withdateranges=0&showpopupbutton=0&studies=[]&hideideas=1&hide_top_toolbar=1&hide_legend=1&hide_volume=1&hotlist=0&calendar=0&news=[]&widgetbar_width=0&linecolor=%23F7931A&fontsize=12" allowtransparency="true" scrolling="no"></iframe>
-      </div>
-    </div>
-
-    <!-- ADA -->
-    <div class="coin-row">
-      <div class="clogo" style="background:#0033AD"><svg width="18" height="18" viewBox="0 0 24 24" fill="white"><circle cx="12" cy="4" r="1.5"/><circle cx="12" cy="20" r="1.5"/><circle cx="4" cy="8" r="1.5"/><circle cx="20" cy="8" r="1.5"/><circle cx="4" cy="16" r="1.5"/><circle cx="20" cy="16" r="1.5"/><circle cx="7" cy="6" r="1"/><circle cx="17" cy="6" r="1"/><circle cx="7" cy="18" r="1"/><circle cx="17" cy="18" r="1"/><circle cx="12" cy="12" r="2"/></svg></div>
-      <div class="cinfo">
-        <div class="cname">Cardano (ADA) <span class="ctag">⚡ live</span></div>
-        <div class="cdetail">635 coins · 4.0% · target $0.263</div>
-        <div class="cbar"><div class="cbar-fill" style="width:8%;background:#0033AD"></div></div>
-      </div>
-      <div class="tv-wrap">
-        <iframe src="https://www.tradingview.com/widgetembed/?frameElementId=tv_ada&symbol=BINANCE%3AADAUSDT&interval=1&hidesidetoolbar=1&symboledit=0&saveimage=0&toolbarbg=0A0E1A&theme=dark&style=9&timezone=Asia%2FKuala_Lumpur&withdateranges=0&showpopupbutton=0&studies=[]&hideideas=1&hide_top_toolbar=1&hide_legend=1&hide_volume=1&hotlist=0&calendar=0&news=[]&widgetbar_width=0&linecolor=%230033AD&fontsize=12" allowtransparency="true" scrolling="no"></iframe>
-      </div>
-    </div>
-
-    <!-- KITE -->
-    <div class="coin-row warn">
-      <div class="clogo" style="background:#FF6B2B"><svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M12 2L4 12l8 10 8-10L12 2zm0 3.5L17.5 12 12 18.5 6.5 12 12 5.5z"/></svg></div>
-      <div class="cinfo">
-        <div class="cname">KITE <span class="cwarn ctag">⚠ stop $0.130</span> <span class="ctag">⚡ live</span></div>
-        <div class="cdetail">680 coins · Sell 340 @ $0.160 · Sell 340 @ $0.170</div>
-        <div class="cbar"><div class="cbar-fill" style="width:3%;background:#FF6B2B"></div></div>
-      </div>
-      <div class="tv-wrap">
-        <iframe src="https://www.tradingview.com/widgetembed/?frameElementId=tv_kite&symbol=BINANCE%3AKITEUSDT&interval=1&hidesidetoolbar=1&symboledit=0&saveimage=0&toolbarbg=0A0E1A&theme=dark&style=9&timezone=Asia%2FKuala_Lumpur&withdateranges=0&showpopupbutton=0&studies=[]&hideideas=1&hide_top_toolbar=1&hide_legend=1&hide_volume=1&hotlist=0&calendar=0&news=[]&widgetbar_width=0&linecolor=%23FF6B2B&fontsize=12" allowtransparency="true" scrolling="no"></iframe>
-      </div>
-    </div>
-
-    <!-- ID -->
-    <div class="coin-row">
-      <div class="clogo" style="background:#2B6CB0"><svg width="18" height="18" viewBox="0 0 24 24" fill="white"><rect x="3" y="4" width="18" height="16" rx="2" stroke="white" stroke-width="1.5" fill="none"/><circle cx="9" cy="10" r="2" fill="white"/><line x1="14" y1="9" x2="19" y2="9" stroke="white" stroke-width="1.5"/><line x1="14" y1="12" x2="19" y2="12" stroke="white" stroke-width="1.5"/></svg></div>
-      <div class="cinfo">
-        <div class="cname">Space ID (ID) <span class="ctag">⚡ live</span></div>
-        <div class="cdetail">833 coins · 0.8%</div>
-        <div class="cbar"><div class="cbar-fill" style="width:1%;background:#2B6CB0"></div></div>
-      </div>
-      <div class="tv-wrap">
-        <iframe src="https://www.tradingview.com/widgetembed/?frameElementId=tv_id&symbol=BINANCE%3AIDUSDT&interval=1&hidesidetoolbar=1&symboledit=0&saveimage=0&toolbarbg=0A0E1A&theme=dark&style=9&timezone=Asia%2FKuala_Lumpur&withdateranges=0&showpopupbutton=0&studies=[]&hideideas=1&hide_top_toolbar=1&hide_legend=1&hide_volume=1&hotlist=0&calendar=0&news=[]&widgetbar_width=0&linecolor=%232B6CB0&fontsize=12" allowtransparency="true" scrolling="no"></iframe>
-      </div>
-    </div>
-
-    <!-- DOGE -->
-    <div class="coin-row">
-      <div class="clogo" style="background:#C2A633"><svg width="20" height="20" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#C2A633"/><text x="12" y="16.5" text-anchor="middle" font-size="12" font-weight="bold" fill="white" font-family="Arial">Ð</text></svg></div>
-      <div class="cinfo">
-        <div class="cname">Dogecoin (DOGE) <span class="ctag">⚡ live</span></div>
-        <div class="cdetail">509 coins · stop $0.088 · target $0.115</div>
-        <div class="cbar"><div class="cbar-fill" style="width:1.5%;background:#C2A633"></div></div>
-      </div>
-      <div class="tv-wrap">
-        <iframe src="https://www.tradingview.com/widgetembed/?frameElementId=tv_doge&symbol=BINANCE%3ADOGEUSDT&interval=1&hidesidetoolbar=1&symboledit=0&saveimage=0&toolbarbg=0A0E1A&theme=dark&style=9&timezone=Asia%2FKuala_Lumpur&withdateranges=0&showpopupbutton=0&studies=[]&hideideas=1&hide_top_toolbar=1&hide_legend=1&hide_volume=1&hotlist=0&calendar=0&news=[]&widgetbar_width=0&linecolor=%23C2A633&fontsize=12" allowtransparency="true" scrolling="no"></iframe>
-      </div>
-    </div>
-
-    <!-- LINK -->
-    <div class="coin-row">
-      <div class="clogo" style="background:#2A5ADA"><svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M12 2l-2.5 1.5L7 9l2.5 1.5L12 9l2.5 1.5L17 9l-2.5-5.5L12 2zM7 10.5L4.5 12 4 16.5 7 18l2.5-1.5v-3L7 10.5zm10 0l-2.5 3v3L17 18l3-1.5-.5-4.5L17 10.5zM9.5 13.5v3l2.5 1.5 2.5-1.5v-3L12 12l-2.5 1.5z"/></svg></div>
-      <div class="cinfo">
-        <div class="cname">Chainlink (LINK) <span class="ctag">⚡ live</span></div>
-        <div class="cdetail">3.23 coins · bought $13.008 · target $16</div>
-        <div class="cbar"><div class="cbar-fill" style="width:1.2%;background:#2A5ADA"></div></div>
-      </div>
-      <div class="tv-wrap">
-        <iframe src="https://www.tradingview.com/widgetembed/?frameElementId=tv_link&symbol=BINANCE%3ALINKUSDT&interval=1&hidesidetoolbar=1&symboledit=0&saveimage=0&toolbarbg=0A0E1A&theme=dark&style=9&timezone=Asia%2FKuala_Lumpur&withdateranges=0&showpopupbutton=0&studies=[]&hideideas=1&hide_top_toolbar=1&hide_legend=1&hide_volume=1&hotlist=0&calendar=0&news=[]&widgetbar_width=0&linecolor=%232A5ADA&fontsize=12" allowtransparency="true" scrolling="no"></iframe>
-      </div>
-    </div>
-
-    <!-- PEPE -->
-    <div class="coin-row">
-      <div class="clogo" style="background:#3a7d44"><svg width="20" height="20" viewBox="0 0 24 24"><ellipse cx="12" cy="13" rx="8" ry="7" fill="#3a7d44"/><ellipse cx="12" cy="13" rx="5" ry="4.5" fill="#5a9e5a"/><circle cx="9.5" cy="11" r="1.8" fill="white"/><circle cx="14.5" cy="11" r="1.8" fill="white"/><circle cx="9.5" cy="11" r="0.9" fill="#111"/><circle cx="14.5" cy="11" r="0.9" fill="#111"/><path d="M9.5 15.5 Q12 17 14.5 15.5" stroke="white" stroke-width="1" fill="none" stroke-linecap="round"/></svg></div>
-      <div class="cinfo">
-        <div class="cname">Pepe (PEPE) <span class="ctag">⚡ live</span></div>
-        <div class="cdetail">8,978,610 coins · 1.0%</div>
-        <div class="cbar"><div class="cbar-fill" style="width:1%;background:#3a7d44"></div></div>
-      </div>
-      <div class="tv-wrap">
-        <iframe src="https://www.tradingview.com/widgetembed/?frameElementId=tv_pepe&symbol=BINANCE%3APEPEUSDT&interval=1&hidesidetoolbar=1&symboledit=0&saveimage=0&toolbarbg=0A0E1A&theme=dark&style=9&timezone=Asia%2FKuala_Lumpur&withdateranges=0&showpopupbutton=0&studies=[]&hideideas=1&hide_top_toolbar=1&hide_legend=1&hide_volume=1&hotlist=0&calendar=0&news=[]&widgetbar_width=0&linecolor=%233a7d44&fontsize=12" allowtransparency="true" scrolling="no"></iframe>
-      </div>
-    </div>
-
-    <!-- POL -->
-    <div class="coin-row">
-      <div class="clogo" style="background:#8247E5"><svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M16.5 9.5l-4.5-2.5-4.5 2.5v5l4.5 2.5 4.5-2.5v-5zm-4.5 5.5l-3-1.7V11l3 1.7 3-1.7v2.3l-3 1.7z"/></svg></div>
-      <div class="cinfo">
-        <div class="cname">POL (Polygon) <span class="ctag">⚡ live</span></div>
-        <div class="cdetail">234 coins · 0.6%</div>
-        <div class="cbar"><div class="cbar-fill" style="width:0.7%;background:#8247E5"></div></div>
-      </div>
-      <div class="tv-wrap">
-        <iframe src="https://www.tradingview.com/widgetembed/?frameElementId=tv_pol&symbol=BINANCE%3APOLUSDT&interval=1&hidesidetoolbar=1&symboledit=0&saveimage=0&toolbarbg=0A0E1A&theme=dark&style=9&timezone=Asia%2FKuala_Lumpur&withdateranges=0&showpopupbutton=0&studies=[]&hideideas=1&hide_top_toolbar=1&hide_legend=1&hide_volume=1&hotlist=0&calendar=0&news=[]&widgetbar_width=0&linecolor=%238247E5&fontsize=12" allowtransparency="true" scrolling="no"></iframe>
-      </div>
-    </div>
-
-    <!-- SUI -->
-    <div class="coin-row">
-      <div class="clogo" style="background:#4DA2FF"><svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M12 3C9 3 6.5 5.5 6.5 9c0 2 1 3.8 2.5 5L12 22l3-8c1.5-1.2 2.5-3 2.5-5 0-3.5-2.5-6-6-6zm0 8a2.5 2.5 0 110-5 2.5 2.5 0 010 5z"/></svg></div>
-      <div class="cinfo">
-        <div class="cname">Sui (SUI) <span class="ctag">⚡ live</span></div>
-        <div class="cdetail">23 coins · stop $0.88 · target $1.265</div>
-        <div class="cbar"><div class="cbar-fill" style="width:0.6%;background:#4DA2FF"></div></div>
-      </div>
-      <div class="tv-wrap">
-        <iframe src="https://www.tradingview.com/widgetembed/?frameElementId=tv_sui&symbol=BINANCE%3ASUIUSDT&interval=1&hidesidetoolbar=1&symboledit=0&saveimage=0&toolbarbg=0A0E1A&theme=dark&style=9&timezone=Asia%2FKuala_Lumpur&withdateranges=0&showpopupbutton=0&studies=[]&hideideas=1&hide_top_toolbar=1&hide_legend=1&hide_volume=1&hotlist=0&calendar=0&news=[]&widgetbar_width=0&linecolor=%234DA2FF&fontsize=12" allowtransparency="true" scrolling="no"></iframe>
-      </div>
-    </div>
-
-    <!-- PUMP -->
-    <div class="coin-row">
-      <div class="clogo" style="background:#00C853"><svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M3 20l4.5-9 4 4.5 4-10.5 4.5 15H3z"/></svg></div>
-      <div class="cinfo">
-        <div class="cname">Pump.fun (PUMP) <span class="ctag">⚡ live</span></div>
-        <div class="cdetail">3,667 coins · 0.4%</div>
-        <div class="cbar"><div class="cbar-fill" style="width:0.4%;background:#00C853"></div></div>
-      </div>
-      <div class="tv-wrap">
-        <iframe src="https://www.tradingview.com/widgetembed/?frameElementId=tv_pump&symbol=BINANCE%3APUMPUSDT&interval=1&hidesidetoolbar=1&symboledit=0&saveimage=0&toolbarbg=0A0E1A&theme=dark&style=9&timezone=Asia%2FKuala_Lumpur&withdateranges=0&showpopupbutton=0&studies=[]&hideideas=1&hide_top_toolbar=1&hide_legend=1&hide_volume=1&hotlist=0&calendar=0&news=[]&widgetbar_width=0&linecolor=%2300C853&fontsize=12" allowtransparency="true" scrolling="no"></iframe>
-      </div>
-    </div>
-
-    <!-- PENGU -->
-    <div class="coin-row">
-      <div class="clogo" style="background:#4A90D9"><svg width="20" height="20" viewBox="0 0 24 24"><ellipse cx="12" cy="14" rx="6" ry="7" fill="#1a1a1a"/><ellipse cx="12" cy="14.5" rx="3.5" ry="4.5" fill="white"/><circle cx="10" cy="11.5" r="1.2" fill="white"/><circle cx="14" cy="11.5" r="1.2" fill="white"/><circle cx="10" cy="11.5" r="0.6" fill="#1a1a1a"/><circle cx="14" cy="11.5" r="0.6" fill="#1a1a1a"/><ellipse cx="12" cy="8" rx="4" ry="3.2" fill="#1a1a1a"/><ellipse cx="12" cy="18" rx="2.5" ry="1.2" fill="#FF8C00" opacity="0.9"/></svg></div>
-      <div class="cinfo">
-        <div class="cname">Pudgy Penguins (PENGU) <span class="ctag">⚡ live</span></div>
-        <div class="cdetail">1,059 coins · 0.3%</div>
-        <div class="cbar"><div class="cbar-fill" style="width:0.3%;background:#4A90D9"></div></div>
-      </div>
-      <div class="tv-wrap">
-        <iframe src="https://www.tradingview.com/widgetembed/?frameElementId=tv_pengu&symbol=BINANCE%3APENGUUSDT&interval=1&hidesidetoolbar=1&symboledit=0&saveimage=0&toolbarbg=0A0E1A&theme=dark&style=9&timezone=Asia%2FKuala_Lumpur&withdateranges=0&showpopupbutton=0&studies=[]&hideideas=1&hide_top_toolbar=1&hide_legend=1&hide_volume=1&hotlist=0&calendar=0&news=[]&widgetbar_width=0&linecolor=%234A90D9&fontsize=12" allowtransparency="true" scrolling="no"></iframe>
-      </div>
-    </div>
-
-  </div><!-- end holdings panel -->
-
-  <!-- RIGHT COLUMN -->
-  <div style="display:flex;flex-direction:column;gap:12px">
-
-    <!-- TARGET TRACKER -->
-    <div class="panel">
-      <div class="panel-header"><span class="panel-title">Target Tracker</span><span class="panel-badge green">Active</span></div>
-      <div class="target-row"><div class="target-coin">KITE</div><div class="target-track"><div class="target-fill" style="width:68%;background:linear-gradient(90deg,#FF6B2B,#FFB800)"><div class="target-tip" style="background:#FFB800"></div></div></div><div class="target-info"><div class="target-pct" style="color:var(--yellow)">68%</div><div class="target-label">to $0.160</div></div></div>
-      <div class="target-row"><div class="target-coin">ADA</div><div class="target-track"><div class="target-fill" style="width:72%;background:linear-gradient(90deg,#0033AD,#4A6FE3)"><div class="target-tip" style="background:#4A6FE3"></div></div></div><div class="target-info"><div class="target-pct up">72%</div><div class="target-label">to $0.263</div></div></div>
-      <div class="target-row"><div class="target-coin">DOGE</div><div class="target-track"><div class="target-fill" style="width:59%;background:linear-gradient(90deg,#C2A633,#FFD700)"><div class="target-tip" style="background:#FFD700"></div></div></div><div class="target-info"><div class="target-pct" style="color:var(--yellow)">59%</div><div class="target-label">to $0.115</div></div></div>
-      <div class="target-row"><div class="target-coin">LINK</div><div class="target-track"><div class="target-fill" style="width:14%;background:linear-gradient(90deg,#2A5ADA,#00C9FF)"><div class="target-tip" style="background:#00C9FF"></div></div></div><div class="target-info"><div class="target-pct" style="color:var(--text2)">14%</div><div class="target-label">to $16.00</div></div></div>
-      <div class="target-row"><div class="target-coin">SUI</div><div class="target-track"><div class="target-fill" style="width:50%;background:linear-gradient(90deg,#4DA2FF,#00C9FF)"><div class="target-tip" style="background:#00C9FF"></div></div></div><div class="target-info"><div class="target-pct up">50%</div><div class="target-label">to $1.265</div></div></div>
-    </div>
-
-    <!-- STOP LOSSES -->
-    <div class="panel">
-      <div class="panel-header"><span class="panel-title">Stop Losses</span><span class="panel-badge">Protected</span></div>
-      <div style="padding:12px 18px;display:flex;flex-direction:column;gap:10px">
-        <div class="sl-row"><span style="color:var(--text2);width:50px">KITE</span><div style="display:flex;align-items:center;gap:8px;flex:1;justify-content:flex-end"><span style="color:var(--text2);font-family:var(--mono);font-size:12px">$0.130</span><div class="sl-bar"><div class="sl-fill" style="width:85%;background:var(--yellow)"></div></div><span style="color:var(--yellow);font-size:11px;width:50px">Watch ⚠</span></div></div>
-        <div class="sl-row"><span style="color:var(--text2);width:50px">DOGE</span><div style="display:flex;align-items:center;gap:8px;flex:1;justify-content:flex-end"><span style="color:var(--text2);font-family:var(--mono);font-size:12px">$0.088</span><div class="sl-bar"><div class="sl-fill" style="width:40%;background:var(--green)"></div></div><span style="color:var(--green);font-size:11px;width:50px">Safe ✓</span></div></div>
-        <div class="sl-row"><span style="color:var(--text2);width:50px">LINK</span><div style="display:flex;align-items:center;gap:8px;flex:1;justify-content:flex-end"><span style="color:var(--text2);font-family:var(--mono);font-size:12px">$12.00</span><div class="sl-bar"><div class="sl-fill" style="width:20%;background:var(--green)"></div></div><span style="color:var(--green);font-size:11px;width:50px">Safe ✓</span></div></div>
-        <div class="sl-row"><span style="color:var(--text2);width:50px">SUI</span><div style="display:flex;align-items:center;gap:8px;flex:1;justify-content:flex-end"><span style="color:var(--text2);font-family:var(--mono);font-size:12px">$0.880</span><div class="sl-bar"><div class="sl-fill" style="width:15%;background:var(--green)"></div></div><span style="color:var(--green);font-size:11px;width:50px">Safe ✓</span></div></div>
-      </div>
-    </div>
-
-    <!-- EVENTS -->
-    <div class="panel">
-      <div class="panel-header"><span class="panel-title">Upcoming Events</span><span class="panel-badge yellow">Watch</span></div>
-      <div style="padding:14px 18px;display:flex;flex-direction:column;gap:12px">
-        <div style="display:flex;align-items:center;gap:12px">
-          <div style="width:44px;height:44px;border-radius:10px;background:rgba(0,201,255,0.1);border:1px solid rgba(0,201,255,0.2);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0">
-            <div style="font-size:16px;font-weight:700;color:var(--accent);font-family:var(--mono);line-height:1" id="daysLeft">—</div>
-            <div style="font-size:8px;color:var(--text2)">DAYS</div>
-          </div>
-          <div>
-            <div style="font-size:12px;font-weight:600;color:var(--text)">TOKEN2049 Singapore 🇸🇬</div>
-            <div style="font-size:11px;color:var(--text2);margin-top:2px">Oct 7–8 · Marina Bay Sands</div>
-            <div style="font-size:11px;color:var(--green);margin-top:2px">Bullish catalyst for all your coins</div>
-          </div>
+  <div class="panel">
+    <div class="panel-header"><span class="panel-title">Upcoming Events</span><span class="panel-badge yellow">Watch</span></div>
+    <div style="padding:14px 18px;display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:44px;height:44px;border-radius:10px;background:rgba(0,201,255,0.1);border:1px solid rgba(0,201,255,0.2);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0">
+          <div style="font-size:16px;font-weight:700;color:var(--accent);font-family:var(--mono);line-height:1" id="daysLeft">—</div>
+          <div style="font-size:8px;color:var(--text2)">DAYS</div>
         </div>
-        <div style="height:1px;background:var(--border)"></div>
-        <div style="display:flex;align-items:center;gap:12px">
-          <div style="width:44px;height:44px;border-radius:10px;background:rgba(255,184,0,0.08);border:1px solid rgba(255,184,0,0.2);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0">
-            <div style="font-size:14px;font-weight:700;color:var(--yellow);font-family:var(--mono);line-height:1">Q3</div>
-            <div style="font-size:8px;color:var(--text2)">ENDS</div>
-          </div>
-          <div>
-            <div style="font-size:12px;font-weight:600;color:var(--text)">Q3 Ends + SEC Fiscal Year</div>
-            <div style="font-size:11px;color:var(--text2);margin-top:2px">Sep 30 · Deribit options expiry</div>
-            <div style="font-size:11px;color:var(--yellow);margin-top:2px">Volatility expected · stops active</div>
-          </div>
+        <div>
+          <div style="font-size:12px;font-weight:600;color:var(--text)">TOKEN2049 Singapore 🇸🇬</div>
+          <div style="font-size:11px;color:var(--text2);margin-top:2px">Oct 7–8 · Marina Bay Sands</div>
+          <div style="font-size:11px;color:var(--green);margin-top:2px">Bullish catalyst for all your coins</div>
+        </div>
+      </div>
+      <div style="height:1px;background:var(--border)"></div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:44px;height:44px;border-radius:10px;background:rgba(255,184,0,0.08);border:1px solid rgba(255,184,0,0.2);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0">
+          <div style="font-size:14px;font-weight:700;color:var(--yellow);font-family:var(--mono);line-height:1">Q3</div>
+          <div style="font-size:8px;color:var(--text2)">ENDS</div>
+        </div>
+        <div>
+          <div style="font-size:12px;font-weight:600;color:var(--text)">Q3 Ends + SEC Fiscal Year</div>
+          <div style="font-size:11px;color:var(--text2);margin-top:2px">Sep 30 · Deribit options expiry</div>
+          <div style="font-size:11px;color:var(--yellow);margin-top:2px">Volatility expected · stops active</div>
         </div>
       </div>
     </div>
+  </div>
 
-  </div><!-- end right column -->
+</div><!-- end right column -->
 </div><!-- end main grid -->
 
-<!-- FOOTER -->
 <div class="footer">
-  <span>⚡ TradingView widgets · Binance spot feed · real-time · free tier</span>
+  <span>⚡ TradingView Single Ticker · Binance spot feed · real-time · free tier</span>
   <span style="display:flex;align-items:center;gap:8px">
     <span style="background:rgba(0,201,255,0.08);border:1px solid rgba(0,201,255,0.2);border-radius:6px;padding:3px 10px;font-size:10px;color:var(--accent);font-weight:600">🔐 TIGER-MOON-74</span>
     <span style="font-family:var(--mono);font-size:10px;color:var(--text3)" id="footerTime"></span>
   </span>
 </div>
 
-<script>
+<!-- TradingView Widget Script -->
+<script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-single-quote.js" async></script>
+<script type="text/javascript">
+// Countdown
 function countdown() {
-  const token2049 = new Date('2026-10-07T00:00:00+08:00');
-  const days = Math.max(0, Math.ceil((token2049 - new Date()) / 86400000));
+  const days = Math.max(0, Math.ceil((new Date('2026-10-07T00:00:00+08:00') - new Date()) / 86400000));
   const el1 = document.getElementById('daysLeft');
   const el2 = document.getElementById('countdown');
   if (el1) el1.textContent = days;
   if (el2) el2.textContent = days + ' days 🇸🇬';
 }
 
+// Timestamp
 function updateTime() {
   const now = new Date();
   document.getElementById('lastUpdated').textContent =
-    'TradingView live · Binance feed · ' +
-    now.toLocaleDateString('en-MY',{day:'numeric',month:'short',year:'numeric'});
+    'TradingView · Binance feed · ' + now.toLocaleDateString('en-MY',{day:'numeric',month:'short',year:'numeric'});
   document.getElementById('footerTime').textContent =
     now.toISOString().slice(0,16).replace('T',' ') + ' UTC';
 }
 
+// Load TradingView Single Ticker widgets
+const TICKERS = [
+  { id: 'tw-bnb',   symbol: 'BINANCE:BNBUSDT'   },
+  { id: 'tw-xrp',   symbol: 'BINANCE:XRPUSDT'   },
+  { id: 'tw-btc',   symbol: 'BINANCE:BTCUSDT'    },
+  { id: 'tw-ada',   symbol: 'BINANCE:ADAUSDT'    },
+  { id: 'tw-kite',  symbol: 'BINANCE:KITEUSDT'   },
+  { id: 'tw-id',    symbol: 'BINANCE:IDUSDT'     },
+  { id: 'tw-doge',  symbol: 'BINANCE:DOGEUSDT'   },
+  { id: 'tw-link',  symbol: 'BINANCE:LINKUSDT'   },
+  { id: 'tw-pepe',  symbol: 'BINANCE:PEPEUSDT'   },
+  { id: 'tw-pol',   symbol: 'BINANCE:POLUSDT'    },
+  { id: 'tw-sui',   symbol: 'BINANCE:SUIUSDT'    },
+  { id: 'tw-pump',  symbol: 'BINANCE:PUMPUSDT'   },
+  { id: 'tw-pengu', symbol: 'BINANCE:PENGUUSDT'  },
+];
+
+function loadWidgets() {
+  TICKERS.forEach(function(t) {
+    var container = document.getElementById(t.id);
+    if (!container) return;
+    var script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-single-quote.js';
+    script.async = true;
+    script.innerHTML = JSON.stringify({
+      "symbol": t.symbol,
+      "width": "100%",
+      "colorTheme": "dark",
+      "isTransparent": true,
+      "locale": "en"
+    });
+    container.appendChild(script);
+  });
+}
+
 countdown();
 updateTime();
+window.addEventListener('load', loadWidgets);
 </script>
 </body>
 </html>
