@@ -17,12 +17,31 @@
 html,body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100%;-webkit-font-smoothing:antialiased}
 body{padding-bottom:calc(var(--safe-bot)+16px)}
 
-.header{padding:calc(var(--safe-top)+16px) 16px 0;max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+/* REFRESH BAR */
+.refresh-bar{position:sticky;top:0;z-index:100;background:rgba(10,14,26,0.94);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:calc(var(--safe-top)+8px) 16px 8px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.refresh-bar.stale{border-bottom-color:var(--yellow)}
+.refresh-info{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0}
+.refresh-status{font-size:11px;font-weight:600;color:var(--accent);display:flex;align-items:center;gap:5px}
+.refresh-bar.stale .refresh-status{color:var(--yellow)}
+.refresh-age{font-size:10px;color:var(--text2);font-family:var(--mono)}
+.stale-warn{display:none;font-size:10px;color:var(--yellow);font-weight:500}
+.refresh-bar.stale .stale-warn{display:block}
+.refresh-btn{display:flex;align-items:center;gap:7px;background:var(--accent);color:#000;border:none;border-radius:10px;padding:9px 16px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--font);white-space:nowrap;flex-shrink:0;-webkit-tap-highlight-color:rgba(0,201,255,0.3);touch-action:manipulation;-webkit-appearance:none;transition:opacity .15s,transform .1s}
+.refresh-btn:active{opacity:.8;transform:scale(0.97)}
+.refresh-btn:disabled{background:var(--bg3);color:var(--accent);border:1px solid var(--accent);cursor:not-allowed}
+.refresh-btn svg.spin{animation:spin .6s linear infinite}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;flex-shrink:0}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.85)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes flash-green{0%{background:rgba(16,217,128,0.18)}100%{background:transparent}}
+@keyframes flash-red{0%{background:rgba(255,71,87,0.18)}100%{background:transparent}}
+.flash-up{animation:flash-green 1s ease-out}
+.flash-dn{animation:flash-red 1s ease-out}
+
+.header{padding:16px 16px 0;max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
 .header h1{font-size:20px;font-weight:600;letter-spacing:-.02em}
 .header p{font-size:12px;color:var(--text2);margin-top:2px}
 .live-pill{display:flex;align-items:center;gap:6px;background:rgba(0,201,255,0.08);border:1px solid rgba(0,201,255,0.25);border-radius:20px;padding:5px 12px;font-size:11px;font-weight:500;color:var(--accent)}
-.live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;flex-shrink:0}
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.85)}}
 
 .total-banner{margin:16px auto 0;max-width:1200px;padding:0 16px}
 .total-inner{background:linear-gradient(135deg,var(--bg2) 0%,#0D1929 100%);border:1px solid var(--border);border-radius:16px;padding:20px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;position:relative;overflow:hidden}
@@ -37,6 +56,9 @@ body{padding-bottom:calc(var(--safe-bot)+16px)}
 .stat-val.green{color:var(--green)}
 .stat-val.accent{color:var(--accent)}
 
+.error-bar{display:none;margin:8px 16px 0;max-width:1200px;margin-left:auto;margin-right:auto;background:rgba(255,71,87,0.1);border:1px solid rgba(255,71,87,0.3);border-radius:8px;padding:8px 14px;font-size:12px;color:var(--red)}
+.error-bar.visible{display:block}
+
 .main-grid{max-width:1200px;margin:16px auto 0;padding:0 16px;display:grid;grid-template-columns:1fr;gap:12px}
 @media(min-width:900px){.main-grid{grid-template-columns:1.2fr 0.8fr;align-items:start}}
 
@@ -47,21 +69,24 @@ body{padding-bottom:calc(var(--safe-bot)+16px)}
 .panel-badge.green{background:rgba(16,217,128,0.1);color:var(--green);border-color:rgba(16,217,128,0.2)}
 .panel-badge.yellow{background:rgba(255,184,0,0.1);color:var(--yellow);border-color:rgba(255,184,0,0.2)}
 
-.coin-row{padding:10px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
+.coin-row{padding:11px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;transition:background .15s}
 .coin-row:last-child{border-bottom:none}
+.coin-row:hover{background:rgba(255,255,255,0.015)}
 .coin-row.warn{border-left:3px solid var(--yellow)}
 .clogo{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden}
 .cinfo{flex:1;min-width:0}
 .cname{font-size:13px;font-weight:500;color:var(--text);display:flex;align-items:center;gap:5px;flex-wrap:wrap}
 .ctag{font-size:9px;padding:1px 5px;border-radius:4px;font-weight:600;background:rgba(0,201,255,0.15);color:#00C9FF}
 .cwarn{background:rgba(255,184,0,0.15);color:#FFB800;font-size:9px;padding:1px 5px;border-radius:4px;font-weight:600}
-.cdetail{font-size:11px;color:var(--text2);margin-top:1px}
+.cdetail{font-size:11px;color:var(--text2);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .cbar{height:3px;background:var(--bg3);border-radius:2px;margin-top:4px;overflow:hidden}
 .cbar-fill{height:100%;border-radius:2px}
 
-/* TradingView Single Ticker */
-.tv-price{flex-shrink:0;width:150px;min-height:44px;overflow:hidden}
-.tv-price .tradingview-widget-container{height:44px}
+/* PRICE DISPLAY — prominent, right-aligned */
+.cprice{text-align:right;flex-shrink:0;min-width:90px}
+.cprice-val{font-size:15px;font-weight:700;font-family:var(--mono);color:var(--text);line-height:1.2}
+.cprice-chg{font-size:11px;font-weight:600;margin-top:3px}
+.up{color:var(--green)}.dn{color:var(--red)}.nt{color:var(--text2)}
 
 .target-row{padding:11px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
 .target-row:last-child{border-bottom:none}
@@ -72,7 +97,6 @@ body{padding-bottom:calc(var(--safe-bot)+16px)}
 .target-info{text-align:right;flex-shrink:0;width:70px}
 .target-pct{font-size:12px;font-weight:600}
 .target-label{font-size:10px;color:var(--text2);margin-top:1px}
-.up{color:var(--green)}.dn{color:var(--red)}.nt{color:var(--text2)}
 
 .sl-row{display:flex;justify-content:space-between;align-items:center;font-size:12px}
 .sl-bar{width:60px;height:4px;background:var(--bg3);border-radius:2px;overflow:hidden}
@@ -82,125 +106,130 @@ body{padding-bottom:calc(var(--safe-bot)+16px)}
 ::-webkit-scrollbar{width:4px}
 ::-webkit-scrollbar-track{background:var(--bg)}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
-@media(max-width:400px){.total-value{font-size:28px}.total-stats{gap:14px}.tv-price{width:130px}}
+@media(max-width:400px){.total-value{font-size:28px}.total-stats{gap:14px}.cprice-val{font-size:13px}.refresh-btn{padding:8px 12px;font-size:11px}}
 </style>
 </head>
 <body>
 
-<div class="header">
-  <div><h1>Fidael's Crypto Portfolio</h1><p id="lastUpdated">TradingView · Binance live feed</p></div>
-  <div class="live-pill"><div class="live-dot"></div>TradingView live</div>
+<!-- REFRESH BAR -->
+<div class="refresh-bar" id="refreshBar">
+  <div class="refresh-info">
+    <div class="refresh-status"><div class="live-dot"></div><span id="statusText">Fetching live prices…</span></div>
+    <div class="refresh-age" id="ageText">Please wait</div>
+    <div class="stale-warn">⚠ Prices over 15 min old — tap Refresh</div>
+  </div>
+  <button class="refresh-btn" id="refreshBtn" onclick="fetchAllPrices()" disabled>
+    <svg id="refreshIcon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.65 6.35A7.96 7.96 0 0012 4a8 8 0 00-8 8 8 8 0 008 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18a6 6 0 01-6-6 6 6 0 016-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+    Refresh Prices
+  </button>
 </div>
 
+<!-- HEADER -->
+<div class="header">
+  <div><h1>Fidael's Crypto Portfolio</h1><p id="lastUpdated">Loading live prices…</p></div>
+  <div class="live-pill"><div class="live-dot"></div>CoinGecko live</div>
+</div>
+
+<!-- TOTAL BANNER -->
 <div class="total-banner"><div class="total-inner">
   <div>
     <div class="total-label">Total portfolio value</div>
-    <div class="total-value">~$4,685</div>
-    <div class="total-delta">13 coins · prices live via TradingView · Binance feed</div>
+    <div class="total-value" id="totalValue">—</div>
+    <div class="total-delta" id="totalDelta">13 coins · loading…</div>
   </div>
   <div class="total-stats">
-    <div class="stat-item"><div class="stat-label">Biggest holding</div><div class="stat-val">BNB</div></div>
+    <div class="stat-item"><div class="stat-label">Biggest holding</div><div class="stat-val" id="biggestHolding">BNB</div></div>
     <div class="stat-item"><div class="stat-label">On Binance Earn</div><div class="stat-val green">XRP 💰</div></div>
     <div class="stat-item"><div class="stat-label">TOKEN2049 Singapore</div><div class="stat-val accent" id="countdown">— days 🇸🇬</div></div>
   </div>
 </div></div>
 
+<div class="error-bar" id="errorBar"></div>
+
+<!-- MAIN GRID -->
 <div class="main-grid">
 <div class="panel">
-  <div class="panel-header"><span class="panel-title">Your Holdings</span><span class="panel-badge">13 coins · Binance live</span></div>
+  <div class="panel-header"><span class="panel-title">Your Holdings</span><span class="panel-badge">13 coins · live</span></div>
 
-  <!-- BNB -->
-  <div class="coin-row">
+  <div class="coin-row" id="row-bnb">
     <div class="clogo" style="background:#F3BA2F"><svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 2L8.5 5.5 10 7l2-2 2 2 1.5-1.5L12 2zM6.5 8L5 9.5 6.5 11 8 9.5 6.5 8zm11 0L16 9.5l1.5 1.5 1.5-1.5L17.5 8zM12 8l-4 4 4 4 4-4-4-4zm0 2.5L13.5 12 12 13.5 10.5 12 12 10.5zM6.5 13L5 14.5 6.5 16l1.5-1.5L6.5 13zm11 0L16 14.5l1.5 1.5 1.5-1.5L17.5 13zM12 17l-1.5 1.5 1.5 1.5 1.5-1.5L12 17z"/></svg></div>
-    <div class="cinfo"><div class="cname">BNB <span class="ctag">⚡ live</span></div><div class="cdetail">2.59 coins · 50.7%</div><div class="cbar"><div class="cbar-fill" style="width:100%;background:#F3BA2F"></div></div></div>
-    <div class="tv-price"><div class="tradingview-widget-container"><div class="tradingview-widget-container__widget" id="tw-bnb"></div></div></div>
+    <div class="cinfo"><div class="cname">BNB <span class="ctag">⚡ live</span></div><div class="cdetail" id="det-bnb">2.59 coins · 50.7%</div><div class="cbar"><div class="cbar-fill" style="width:100%;background:#F3BA2F"></div></div></div>
+    <div class="cprice"><div class="cprice-val" id="val-bnb">—</div><div class="cprice-chg nt" id="chg-bnb">—</div></div>
   </div>
 
-  <!-- XRP -->
-  <div class="coin-row">
+  <div class="coin-row" id="row-xrp">
     <div class="clogo" style="background:#00aae4"><svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M7 3L12 8l5-5h3l-6.5 6.5c-.83.83-2.17.83-3 0L4 3h3zm10 18l-5-5-5 5H4l6.5-6.5c.83-.83 2.17-.83 3 0L20 21h-3z"/></svg></div>
-    <div class="cinfo"><div class="cname">XRP <span class="ctag">⚡ live</span></div><div class="cdetail">1,138 coins · Binance Earn 💰 long hold</div><div class="cbar"><div class="cbar-fill" style="width:84%;background:#00aae4"></div></div></div>
-    <div class="tv-price"><div class="tradingview-widget-container"><div class="tradingview-widget-container__widget" id="tw-xrp"></div></div></div>
+    <div class="cinfo"><div class="cname">XRP <span class="ctag">⚡ live</span></div><div class="cdetail" id="det-xrp">1,138 coins · Binance Earn 💰</div><div class="cbar"><div class="cbar-fill" style="width:84%;background:#00aae4"></div></div></div>
+    <div class="cprice"><div class="cprice-val" id="val-xrp">—</div><div class="cprice-chg nt" id="chg-xrp">—</div></div>
   </div>
 
-  <!-- BTC -->
-  <div class="coin-row">
+  <div class="coin-row" id="row-btc">
     <div class="clogo" style="background:#F7931A"><svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M14.5 10.17c.34-.2.58-.53.58-.97 0-.9-.72-1.2-1.83-1.2H11v2.4h2.25c.5 0 1-.06 1.25-.23zm.25 2.46c0-.97-.72-1.33-1.92-1.33H11v2.7h1.83c1.3 0 1.92-.5 1.92-1.37zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm2.38 11.45c0 1.4-1.07 2.05-2.63 2.05H9.5v2h-1v-2H7.5v-7h1v-2h1.5v2h2.75c1.5 0 2.38.72 2.38 2 0 .65-.3 1.15-.75 1.47.67.33 1 .9 1 1.48z"/></svg></div>
-    <div class="cinfo"><div class="cname">Bitcoin (BTC) <span class="ctag">⚡ live</span></div><div class="cdetail">0.00643 coins · 13.6%</div><div class="cbar"><div class="cbar-fill" style="width:27%;background:#F7931A"></div></div></div>
-    <div class="tv-price"><div class="tradingview-widget-container"><div class="tradingview-widget-container__widget" id="tw-btc"></div></div></div>
+    <div class="cinfo"><div class="cname">Bitcoin (BTC) <span class="ctag">⚡ live</span></div><div class="cdetail" id="det-btc">0.00643 coins · 13.6%</div><div class="cbar"><div class="cbar-fill" style="width:27%;background:#F7931A"></div></div></div>
+    <div class="cprice"><div class="cprice-val" id="val-btc">—</div><div class="cprice-chg nt" id="chg-btc">—</div></div>
   </div>
 
-  <!-- ADA -->
-  <div class="coin-row">
+  <div class="coin-row" id="row-ada">
     <div class="clogo" style="background:#0033AD"><svg width="18" height="18" viewBox="0 0 24 24" fill="white"><circle cx="12" cy="4" r="1.5"/><circle cx="12" cy="20" r="1.5"/><circle cx="4" cy="8" r="1.5"/><circle cx="20" cy="8" r="1.5"/><circle cx="4" cy="16" r="1.5"/><circle cx="20" cy="16" r="1.5"/><circle cx="7" cy="6" r="1"/><circle cx="17" cy="6" r="1"/><circle cx="7" cy="18" r="1"/><circle cx="17" cy="18" r="1"/><circle cx="12" cy="12" r="2"/></svg></div>
-    <div class="cinfo"><div class="cname">Cardano (ADA) <span class="ctag">⚡ live</span></div><div class="cdetail">635 coins · 4.0% · target $0.263</div><div class="cbar"><div class="cbar-fill" style="width:8%;background:#0033AD"></div></div></div>
-    <div class="tv-price"><div class="tradingview-widget-container"><div class="tradingview-widget-container__widget" id="tw-ada"></div></div></div>
+    <div class="cinfo"><div class="cname">Cardano (ADA) <span class="ctag">⚡ live</span></div><div class="cdetail" id="det-ada">635 coins · target $0.263</div><div class="cbar"><div class="cbar-fill" style="width:8%;background:#0033AD"></div></div></div>
+    <div class="cprice"><div class="cprice-val" id="val-ada">—</div><div class="cprice-chg nt" id="chg-ada">—</div></div>
   </div>
 
-  <!-- KITE -->
-  <div class="coin-row warn">
+  <div class="coin-row warn" id="row-kite">
     <div class="clogo" style="background:#FF6B2B"><svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M12 2L4 12l8 10 8-10L12 2zm0 3.5L17.5 12 12 18.5 6.5 12 12 5.5z"/></svg></div>
-    <div class="cinfo"><div class="cname">KITE <span class="cwarn">⚠ stop $0.130</span> <span class="ctag">⚡ live</span></div><div class="cdetail">680 coins · Sell 340@$0.160 · Sell 340@$0.170</div><div class="cbar"><div class="cbar-fill" style="width:3%;background:#FF6B2B"></div></div></div>
-    <div class="tv-price"><div class="tradingview-widget-container"><div class="tradingview-widget-container__widget" id="tw-kite"></div></div></div>
+    <div class="cinfo"><div class="cname">KITE <span class="cwarn">⚠ stop $0.130</span> <span class="ctag">⚡ live</span></div><div class="cdetail" id="det-kite">680 coins · Sell 340@$0.160 · 340@$0.170</div><div class="cbar"><div class="cbar-fill" style="width:3%;background:#FF6B2B"></div></div></div>
+    <div class="cprice"><div class="cprice-val" id="val-kite">—</div><div class="cprice-chg nt" id="chg-kite">—</div></div>
   </div>
 
-  <!-- ID -->
-  <div class="coin-row">
+  <div class="coin-row" id="row-id">
     <div class="clogo" style="background:#2B6CB0"><svg width="18" height="18" viewBox="0 0 24 24" fill="white"><rect x="3" y="4" width="18" height="16" rx="2" stroke="white" stroke-width="1.5" fill="none"/><circle cx="9" cy="10" r="2" fill="white"/><line x1="14" y1="9" x2="19" y2="9" stroke="white" stroke-width="1.5"/><line x1="14" y1="12" x2="19" y2="12" stroke="white" stroke-width="1.5"/></svg></div>
-    <div class="cinfo"><div class="cname">Space ID (ID) <span class="ctag">⚡ live</span></div><div class="cdetail">833 coins · 0.8%</div><div class="cbar"><div class="cbar-fill" style="width:1%;background:#2B6CB0"></div></div></div>
-    <div class="tv-price"><div class="tradingview-widget-container"><div class="tradingview-widget-container__widget" id="tw-id"></div></div></div>
+    <div class="cinfo"><div class="cname">Space ID (ID) <span class="ctag">⚡ live</span></div><div class="cdetail" id="det-id">833 coins · 0.8%</div><div class="cbar"><div class="cbar-fill" style="width:1%;background:#2B6CB0"></div></div></div>
+    <div class="cprice"><div class="cprice-val" id="val-id">—</div><div class="cprice-chg nt" id="chg-id">—</div></div>
   </div>
 
-  <!-- DOGE -->
-  <div class="coin-row">
+  <div class="coin-row" id="row-doge">
     <div class="clogo" style="background:#C2A633"><svg width="20" height="20" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#C2A633"/><text x="12" y="16.5" text-anchor="middle" font-size="12" font-weight="bold" fill="white" font-family="Arial">Ð</text></svg></div>
-    <div class="cinfo"><div class="cname">Dogecoin (DOGE) <span class="ctag">⚡ live</span></div><div class="cdetail">509 coins · stop $0.088 · target $0.115</div><div class="cbar"><div class="cbar-fill" style="width:1.5%;background:#C2A633"></div></div></div>
-    <div class="tv-price"><div class="tradingview-widget-container"><div class="tradingview-widget-container__widget" id="tw-doge"></div></div></div>
+    <div class="cinfo"><div class="cname">Dogecoin (DOGE) <span class="ctag">⚡ live</span></div><div class="cdetail" id="det-doge">509 coins · stop $0.088</div><div class="cbar"><div class="cbar-fill" style="width:1.5%;background:#C2A633"></div></div></div>
+    <div class="cprice"><div class="cprice-val" id="val-doge">—</div><div class="cprice-chg nt" id="chg-doge">—</div></div>
   </div>
 
-  <!-- LINK -->
-  <div class="coin-row">
+  <div class="coin-row" id="row-link">
     <div class="clogo" style="background:#2A5ADA"><svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M12 2l-2.5 1.5L7 9l2.5 1.5L12 9l2.5 1.5L17 9l-2.5-5.5L12 2zM7 10.5L4.5 12 4 16.5 7 18l2.5-1.5v-3L7 10.5zm10 0l-2.5 3v3L17 18l3-1.5-.5-4.5L17 10.5zM9.5 13.5v3l2.5 1.5 2.5-1.5v-3L12 12l-2.5 1.5z"/></svg></div>
-    <div class="cinfo"><div class="cname">Chainlink (LINK) <span class="ctag">⚡ live</span></div><div class="cdetail">3.23 coins · bought $13.008 · target $16</div><div class="cbar"><div class="cbar-fill" style="width:1.2%;background:#2A5ADA"></div></div></div>
-    <div class="tv-price"><div class="tradingview-widget-container"><div class="tradingview-widget-container__widget" id="tw-link"></div></div></div>
+    <div class="cinfo"><div class="cname">Chainlink (LINK) <span class="ctag">⚡ live</span></div><div class="cdetail" id="det-link">3.23 coins · target $16.00</div><div class="cbar"><div class="cbar-fill" style="width:1.2%;background:#2A5ADA"></div></div></div>
+    <div class="cprice"><div class="cprice-val" id="val-link">—</div><div class="cprice-chg nt" id="chg-link">—</div></div>
   </div>
 
-  <!-- PEPE -->
-  <div class="coin-row">
+  <div class="coin-row" id="row-pepe">
     <div class="clogo" style="background:#3a7d44"><svg width="20" height="20" viewBox="0 0 24 24"><ellipse cx="12" cy="13" rx="8" ry="7" fill="#3a7d44"/><ellipse cx="12" cy="13" rx="5" ry="4.5" fill="#5a9e5a"/><circle cx="9.5" cy="11" r="1.8" fill="white"/><circle cx="14.5" cy="11" r="1.8" fill="white"/><circle cx="9.5" cy="11" r="0.9" fill="#111"/><circle cx="14.5" cy="11" r="0.9" fill="#111"/><path d="M9.5 15.5 Q12 17 14.5 15.5" stroke="white" stroke-width="1" fill="none" stroke-linecap="round"/></svg></div>
-    <div class="cinfo"><div class="cname">Pepe (PEPE) <span class="ctag">⚡ live</span></div><div class="cdetail">8,978,610 coins · 1.0%</div><div class="cbar"><div class="cbar-fill" style="width:1%;background:#3a7d44"></div></div></div>
-    <div class="tv-price"><div class="tradingview-widget-container"><div class="tradingview-widget-container__widget" id="tw-pepe"></div></div></div>
+    <div class="cinfo"><div class="cname">Pepe (PEPE) <span class="ctag">⚡ live</span></div><div class="cdetail" id="det-pepe">8,978,610 coins · 1.0%</div><div class="cbar"><div class="cbar-fill" style="width:1%;background:#3a7d44"></div></div></div>
+    <div class="cprice"><div class="cprice-val" id="val-pepe">—</div><div class="cprice-chg nt" id="chg-pepe">—</div></div>
   </div>
 
-  <!-- POL -->
-  <div class="coin-row">
+  <div class="coin-row" id="row-pol">
     <div class="clogo" style="background:#8247E5"><svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M16.5 9.5l-4.5-2.5-4.5 2.5v5l4.5 2.5 4.5-2.5v-5zm-4.5 5.5l-3-1.7V11l3 1.7 3-1.7v2.3l-3 1.7z"/></svg></div>
-    <div class="cinfo"><div class="cname">POL (Polygon) <span class="ctag">⚡ live</span></div><div class="cdetail">234 coins · 0.6%</div><div class="cbar"><div class="cbar-fill" style="width:0.7%;background:#8247E5"></div></div></div>
-    <div class="tv-price"><div class="tradingview-widget-container"><div class="tradingview-widget-container__widget" id="tw-pol"></div></div></div>
+    <div class="cinfo"><div class="cname">POL (Polygon) <span class="ctag">⚡ live</span></div><div class="cdetail" id="det-pol">234 coins · 0.6%</div><div class="cbar"><div class="cbar-fill" style="width:0.7%;background:#8247E5"></div></div></div>
+    <div class="cprice"><div class="cprice-val" id="val-pol">—</div><div class="cprice-chg nt" id="chg-pol">—</div></div>
   </div>
 
-  <!-- SUI -->
-  <div class="coin-row">
+  <div class="coin-row" id="row-sui">
     <div class="clogo" style="background:#4DA2FF"><svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M12 3C9 3 6.5 5.5 6.5 9c0 2 1 3.8 2.5 5L12 22l3-8c1.5-1.2 2.5-3 2.5-5 0-3.5-2.5-6-6-6zm0 8a2.5 2.5 0 110-5 2.5 2.5 0 010 5z"/></svg></div>
-    <div class="cinfo"><div class="cname">Sui (SUI) <span class="ctag">⚡ live</span></div><div class="cdetail">23 coins · stop $0.88 · target $1.265</div><div class="cbar"><div class="cbar-fill" style="width:0.6%;background:#4DA2FF"></div></div></div>
-    <div class="tv-price"><div class="tradingview-widget-container"><div class="tradingview-widget-container__widget" id="tw-sui"></div></div></div>
+    <div class="cinfo"><div class="cname">Sui (SUI) <span class="ctag">⚡ live</span></div><div class="cdetail" id="det-sui">23 coins · stop $0.88 · target $1.265</div><div class="cbar"><div class="cbar-fill" style="width:0.6%;background:#4DA2FF"></div></div></div>
+    <div class="cprice"><div class="cprice-val" id="val-sui">—</div><div class="cprice-chg nt" id="chg-sui">—</div></div>
   </div>
 
-  <!-- PUMP -->
-  <div class="coin-row">
+  <div class="coin-row" id="row-pump">
     <div class="clogo" style="background:#00C853"><svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M3 20l4.5-9 4 4.5 4-10.5 4.5 15H3z"/></svg></div>
-    <div class="cinfo"><div class="cname">Pump.fun (PUMP) <span class="ctag">⚡ live</span></div><div class="cdetail">3,667 coins · 0.4%</div><div class="cbar"><div class="cbar-fill" style="width:0.4%;background:#00C853"></div></div></div>
-    <div class="tv-price"><div class="tradingview-widget-container"><div class="tradingview-widget-container__widget" id="tw-pump"></div></div></div>
+    <div class="cinfo"><div class="cname">Pump.fun (PUMP) <span class="ctag">⚡ live</span></div><div class="cdetail" id="det-pump">3,667 coins · 0.4%</div><div class="cbar"><div class="cbar-fill" style="width:0.4%;background:#00C853"></div></div></div>
+    <div class="cprice"><div class="cprice-val" id="val-pump">—</div><div class="cprice-chg nt" id="chg-pump">—</div></div>
   </div>
 
-  <!-- PENGU -->
-  <div class="coin-row">
+  <div class="coin-row" id="row-pengu">
     <div class="clogo" style="background:#4A90D9"><svg width="20" height="20" viewBox="0 0 24 24"><ellipse cx="12" cy="14" rx="6" ry="7" fill="#1a1a1a"/><ellipse cx="12" cy="14.5" rx="3.5" ry="4.5" fill="white"/><circle cx="10" cy="11.5" r="1.2" fill="white"/><circle cx="14" cy="11.5" r="1.2" fill="white"/><circle cx="10" cy="11.5" r="0.6" fill="#1a1a1a"/><circle cx="14" cy="11.5" r="0.6" fill="#1a1a1a"/><ellipse cx="12" cy="8" rx="4" ry="3.2" fill="#1a1a1a"/><ellipse cx="12" cy="18" rx="2.5" ry="1.2" fill="#FF8C00" opacity="0.9"/></svg></div>
-    <div class="cinfo"><div class="cname">Pudgy Penguins (PENGU) <span class="ctag">⚡ live</span></div><div class="cdetail">1,059 coins · 0.3%</div><div class="cbar"><div class="cbar-fill" style="width:0.3%;background:#4A90D9"></div></div></div>
-    <div class="tv-price"><div class="tradingview-widget-container"><div class="tradingview-widget-container__widget" id="tw-pengu"></div></div></div>
+    <div class="cinfo"><div class="cname">Pudgy Penguins (PENGU) <span class="ctag">⚡ live</span></div><div class="cdetail" id="det-pengu">1,059 coins · 0.3%</div><div class="cbar"><div class="cbar-fill" style="width:0.3%;background:#4A90D9"></div></div></div>
+    <div class="cprice"><div class="cprice-val" id="val-pengu">—</div><div class="cprice-chg nt" id="chg-pengu">—</div></div>
   </div>
 
-</div><!-- end holdings panel -->
+</div><!-- end holdings -->
 
 <!-- RIGHT COLUMN -->
 <div style="display:flex;flex-direction:column;gap:12px">
@@ -257,73 +286,131 @@ body{padding-bottom:calc(var(--safe-bot)+16px)}
 </div><!-- end main grid -->
 
 <div class="footer">
-  <span>⚡ TradingView Single Ticker · Binance spot feed · real-time · free tier</span>
+  <span>⚡ CoinGecko API · live prices · auto-refreshes every 60s</span>
   <span style="display:flex;align-items:center;gap:8px">
     <span style="background:rgba(0,201,255,0.08);border:1px solid rgba(0,201,255,0.2);border-radius:6px;padding:3px 10px;font-size:10px;color:var(--accent);font-weight:600">🔐 TIGER-MOON-74</span>
     <span style="font-family:var(--mono);font-size:10px;color:var(--text3)" id="footerTime"></span>
   </span>
 </div>
 
-<!-- TradingView Widget Script -->
-<script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-single-quote.js" async></script>
-<script type="text/javascript">
-// Countdown
-function countdown() {
-  const days = Math.max(0, Math.ceil((new Date('2026-10-07T00:00:00+08:00') - new Date()) / 86400000));
-  const el1 = document.getElementById('daysLeft');
-  const el2 = document.getElementById('countdown');
-  if (el1) el1.textContent = days;
-  if (el2) el2.textContent = days + ' days 🇸🇬';
+<script>
+const HOLDINGS = {
+  'ripple':         {id:'xrp',   coins:1138,       pDec:4},
+  'bitcoin':        {id:'btc',   coins:0.00643189, pDec:0},
+  'binancecoin':    {id:'bnb',   coins:2.59,       pDec:2},
+  'cardano':        {id:'ada',   coins:635,        pDec:5},
+  'kite-2':         {id:'kite',  coins:680,        pDec:4},
+  'space-id':       {id:'id',    coins:833,        pDec:5},
+  'dogecoin':       {id:'doge',  coins:509,        pDec:5},
+  'chainlink':      {id:'link',  coins:3.23,       pDec:3},
+  'pepe':           {id:'pepe',  coins:8978610,    pDec:9},
+  'matic-network':  {id:'pol',   coins:234,        pDec:5},
+  'sui':            {id:'sui',   coins:23,         pDec:4},
+  'pump-fun':       {id:'pump',  coins:3667,       pDec:6},
+  'pudgy-penguins': {id:'pengu', coins:1059,       pDec:6},
+};
+
+const CG_URL = 'https://api.coingecko.com/api/v3/simple/price?ids=' +
+  Object.keys(HOLDINGS).join(',') + '&vs_currencies=usd&include_24hr_change=true';
+
+let lastFetch=null, ageInterval=null, autoTimer=null;
+
+function flash(id,dir){
+  const r=document.getElementById('row-'+id);
+  if(!r)return;
+  r.classList.remove('flash-up','flash-dn');
+  void r.offsetWidth;
+  r.classList.add(dir==='up'?'flash-up':'flash-dn');
 }
 
-// Timestamp
-function updateTime() {
-  const now = new Date();
-  document.getElementById('lastUpdated').textContent =
-    'TradingView · Binance feed · ' + now.toLocaleDateString('en-MY',{day:'numeric',month:'short',year:'numeric'});
-  document.getElementById('footerTime').textContent =
-    now.toISOString().slice(0,16).replace('T',' ') + ' UTC';
+function fmt(p,dec){
+  if(p>=1000) return '$'+p.toLocaleString('en',{maximumFractionDigits:0});
+  if(p>=1)    return '$'+p.toFixed(dec||2);
+  return '$'+p.toFixed(dec||5);
 }
 
-// Load TradingView Single Ticker widgets
-const TICKERS = [
-  { id: 'tw-bnb',   symbol: 'BINANCE:BNBUSDT'   },
-  { id: 'tw-xrp',   symbol: 'BINANCE:XRPUSDT'   },
-  { id: 'tw-btc',   symbol: 'BINANCE:BTCUSDT'    },
-  { id: 'tw-ada',   symbol: 'BINANCE:ADAUSDT'    },
-  { id: 'tw-kite',  symbol: 'BINANCE:KITEUSDT'   },
-  { id: 'tw-id',    symbol: 'BINANCE:IDUSDT'     },
-  { id: 'tw-doge',  symbol: 'BINANCE:DOGEUSDT'   },
-  { id: 'tw-link',  symbol: 'BINANCE:LINKUSDT'   },
-  { id: 'tw-pepe',  symbol: 'BINANCE:PEPEUSDT'   },
-  { id: 'tw-pol',   symbol: 'BINANCE:POLUSDT'    },
-  { id: 'tw-sui',   symbol: 'BINANCE:SUIUSDT'    },
-  { id: 'tw-pump',  symbol: 'BINANCE:PUMPUSDT'   },
-  { id: 'tw-pengu', symbol: 'BINANCE:PENGUUSDT'  },
-];
+async function fetchAllPrices(){
+  const btn=document.getElementById('refreshBtn');
+  const icon=document.getElementById('refreshIcon');
+  const err=document.getElementById('errorBar');
+  btn.disabled=true; icon.classList.add('spin');
+  document.getElementById('statusText').textContent='Fetching live prices…';
+  err.classList.remove('visible');
 
-function loadWidgets() {
-  TICKERS.forEach(function(t) {
-    var container = document.getElementById(t.id);
-    if (!container) return;
-    var script = document.createElement('script');
-    script.type = 'text/javascript';
-    script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-single-quote.js';
-    script.async = true;
-    script.innerHTML = JSON.stringify({
-      "symbol": t.symbol,
-      "width": "100%",
-      "colorTheme": "dark",
-      "isTransparent": true,
-      "locale": "en"
+  try{
+    const res=await fetch(CG_URL,{cache:'no-store'});
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const data=await res.json();
+
+    let total=0,bigVal=0,bigSym='',failCount=0;
+
+    Object.entries(HOLDINGS).forEach(([cgId,h])=>{
+      const info=data[cgId];
+      if(!info||!info.usd){failCount++;return;}
+      const price=info.usd;
+      const chg=info.usd_24h_change||0;
+      const val=h.coins*price;
+      total+=val;
+      if(val>bigVal){bigVal=val;bigSym=h.id.toUpperCase();}
+
+      const oldEl=document.getElementById('val-'+h.id);
+      const oldVal=parseFloat(oldEl?.textContent?.replace(/[^0-9.]/g,'')||0);
+      flash(h.id,price>=oldVal?'up':'dn');
+
+      const valEl=document.getElementById('val-'+h.id);
+      const chgEl=document.getElementById('chg-'+h.id);
+      if(valEl) valEl.textContent=fmt(price,h.pDec);
+      if(chgEl){
+        chgEl.textContent=(chg>=0?'▲':'▼')+Math.abs(chg).toFixed(2)+'%';
+        chgEl.className='cprice-chg '+(chg>=0?'up':'dn');
+      }
     });
-    container.appendChild(script);
-  });
+
+    document.getElementById('totalValue').textContent='$'+total.toLocaleString('en',{maximumFractionDigits:0});
+    document.getElementById('totalDelta').textContent='13 coins · CoinGecko live'+(failCount?' · '+failCount+' failed':' ✓');
+    document.getElementById('biggestHolding').textContent=bigSym+' $'+bigVal.toLocaleString('en',{maximumFractionDigits:0});
+    if(failCount){err.textContent='⚠ '+failCount+' coin(s) failed — tap Refresh';err.classList.add('visible');}
+
+    lastFetch=Date.now();
+    document.getElementById('statusText').textContent=failCount?'⚠ '+failCount+' failed':'✓ All prices live';
+    setTimeout(()=>{document.getElementById('statusText').textContent='Live prices';},3000);
+    const now=new Date();
+    document.getElementById('lastUpdated').textContent='Updated: '+now.toLocaleTimeString('en-MY',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:true})+' · '+now.toLocaleDateString('en-MY',{day:'numeric',month:'short',year:'numeric'});
+    document.getElementById('footerTime').textContent=now.toISOString().slice(0,19).replace('T',' ')+' UTC';
+  }catch(e){
+    err.textContent='⚠ '+e.message+' — tap Refresh';
+    err.classList.add('visible');
+    document.getElementById('statusText').textContent='Fetch failed — tap Refresh';
+  }finally{
+    btn.disabled=false; icon.classList.remove('spin');
+  }
+}
+
+function startAgeTimer(){
+  if(ageInterval)clearInterval(ageInterval);
+  ageInterval=setInterval(()=>{
+    if(!lastFetch)return;
+    const secs=Math.floor((Date.now()-lastFetch)/1000);
+    const mins=Math.floor(secs/60),s=secs%60;
+    const bar=document.getElementById('refreshBar');
+    const t=new Date(lastFetch).toLocaleTimeString('en-MY',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:true});
+    document.getElementById('ageText').textContent=(secs<60?secs+'s ago':mins+'m '+s+'s ago')+' · '+t;
+    if(secs>=900){bar.classList.add('stale');document.getElementById('statusText').textContent='Prices may be stale';}
+    else bar.classList.remove('stale');
+  },1000);
+}
+
+function countdown(){
+  const days=Math.max(0,Math.ceil((new Date('2026-10-07T00:00:00+08:00')-new Date())/86400000));
+  const e1=document.getElementById('daysLeft'),e2=document.getElementById('countdown');
+  if(e1)e1.textContent=days;
+  if(e2)e2.textContent=days+' days 🇸🇬';
 }
 
 countdown();
-updateTime();
-window.addEventListener('load', loadWidgets);
+fetchAllPrices();
+startAgeTimer();
+setInterval(fetchAllPrices,60000);
 </script>
 </body>
 </html>
