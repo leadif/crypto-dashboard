@@ -135,12 +135,12 @@ body{padding-bottom:calc(var(--safe-bot)+16px)}
   <div>
     <div class="total-label">Total portfolio value</div>
     <div class="total-value" id="totalValue">—</div>
-    <div class="total-delta" id="totalDelta">13 coins · loading…</div>
+    <div class="total-delta" id="totalDelta">11 coins · loading…</div>
   </div>
   <div class="total-stats">
     <div class="stat-item"><div class="stat-label">Biggest holding</div><div class="stat-val" id="biggestHolding">BNB</div></div>
     <div class="stat-item"><div class="stat-label">On Binance Earn</div><div class="stat-val green">XRP 💰</div></div>
-    <div class="stat-item"><div class="stat-label">TOKEN2049 Singapore</div><div class="stat-val accent" id="countdown">— days 🇸🇬</div></div>
+    <div class="stat-item"><div class="stat-label">Next event</div><div class="stat-val accent" id="countdown">—</div></div>
   </div>
 </div></div>
 
@@ -149,7 +149,7 @@ body{padding-bottom:calc(var(--safe-bot)+16px)}
 <!-- MAIN GRID -->
 <div class="main-grid">
 <div class="panel">
-  <div class="panel-header"><span class="panel-title">Your Holdings</span><span class="panel-badge">13 coins · live</span></div>
+  <div class="panel-header"><span class="panel-title">Your Holdings</span><span class="panel-badge">11 coins · live</span></div>
 
   <div class="coin-row" id="row-bnb">
     <div class="clogo" style="background:#F3BA2F"><svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 2L8.5 5.5 10 7l2-2 2 2 1.5-1.5L12 2zM6.5 8L5 9.5 6.5 11 8 9.5 6.5 8zm11 0L16 9.5l1.5 1.5 1.5-1.5L17.5 8zM12 8l-4 4 4 4 4-4-4-4zm0 2.5L13.5 12 12 13.5 10.5 12 12 10.5zM6.5 13L5 14.5 6.5 16l1.5-1.5L6.5 13zm11 0L16 14.5l1.5 1.5 1.5-1.5L17.5 13zM12 17l-1.5 1.5 1.5 1.5 1.5-1.5L12 17z"/></svg></div>
@@ -239,31 +239,64 @@ body{padding-bottom:calc(var(--safe-bot)+16px)}
   </div>
 
   <div class="panel">
-    <div class="panel-header"><span class="panel-title">Upcoming Events</span><span class="panel-badge yellow">Watch</span></div>
+    <div class="panel-header"><span class="panel-title">Market Events</span><span class="panel-badge yellow">Watch</span></div>
     <div style="padding:14px 18px;display:flex;flex-direction:column;gap:12px">
+
+      <!-- US CPI Oct 14 -->
       <div style="display:flex;align-items:center;gap:12px">
-        <div style="width:44px;height:44px;border-radius:10px;background:rgba(0,201,255,0.1);border:1px solid rgba(0,201,255,0.2);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0">
-          <div style="font-size:16px;font-weight:700;color:var(--accent);font-family:var(--mono);line-height:1" id="daysLeft">—</div>
+        <div style="width:44px;height:44px;border-radius:10px;background:rgba(255,184,0,0.08);border:1px solid rgba(255,184,0,0.2);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0">
+          <div style="font-size:13px;font-weight:700;color:var(--yellow);font-family:var(--mono);line-height:1" id="daysCPI">—</div>
           <div style="font-size:8px;color:var(--text2)">DAYS</div>
         </div>
         <div>
-          <div style="font-size:12px;font-weight:600;color:var(--text)">TOKEN2049 Singapore 🇸🇬</div>
-          <div style="font-size:11px;color:var(--text2);margin-top:2px">Oct 7–8 · Marina Bay Sands</div>
-          <div style="font-size:11px;color:var(--green);margin-top:2px">Bullish catalyst for all your coins</div>
+          <div style="font-size:12px;font-weight:600;color:var(--text)">US CPI Report 🇺🇸</div>
+          <div style="font-size:11px;color:var(--text2);margin-top:2px">Oct 14 · Sep inflation data · 8:30am ET</div>
+          <div style="font-size:11px;color:var(--yellow);margin-top:2px">Hot print = sell pressure · cool = rally fuel</div>
         </div>
       </div>
       <div style="height:1px;background:var(--border)"></div>
+
+      <!-- US Midterms Nov 3 -->
       <div style="display:flex;align-items:center;gap:12px">
-        <div style="width:44px;height:44px;border-radius:10px;background:rgba(255,184,0,0.08);border:1px solid rgba(255,184,0,0.2);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0">
-          <div style="font-size:14px;font-weight:700;color:var(--yellow);font-family:var(--mono);line-height:1">Q3</div>
-          <div style="font-size:8px;color:var(--text2)">ENDS</div>
+        <div style="width:44px;height:44px;border-radius:10px;background:rgba(0,201,255,0.08);border:1px solid rgba(0,201,255,0.2);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0">
+          <div style="font-size:13px;font-weight:700;color:var(--accent);font-family:var(--mono);line-height:1" id="daysMid">—</div>
+          <div style="font-size:8px;color:var(--text2)">DAYS</div>
         </div>
         <div>
-          <div style="font-size:12px;font-weight:600;color:var(--text)">Q3 Ends + SEC Fiscal Year</div>
-          <div style="font-size:11px;color:var(--text2);margin-top:2px">Sep 30 · Deribit options expiry</div>
-          <div style="font-size:11px;color:var(--yellow);margin-top:2px">Volatility expected · stops active</div>
+          <div style="font-size:12px;font-weight:600;color:var(--text)">US Midterm Elections 🗳️</div>
+          <div style="font-size:11px;color:var(--text2);margin-top:2px">Nov 3 · Congress majority at stake</div>
+          <div style="font-size:11px;color:var(--accent);margin-top:2px">Crypto-friendly Congress = sustained bull run</div>
         </div>
       </div>
+      <div style="height:1px;background:var(--border)"></div>
+
+      <!-- US CPI Nov 10 -->
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:44px;height:44px;border-radius:10px;background:rgba(255,184,0,0.08);border:1px solid rgba(255,184,0,0.2);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0">
+          <div style="font-size:13px;font-weight:700;color:var(--yellow);font-family:var(--mono);line-height:1" id="daysCPI2">—</div>
+          <div style="font-size:8px;color:var(--text2)">DAYS</div>
+        </div>
+        <div>
+          <div style="font-size:12px;font-weight:600;color:var(--text)">US CPI Report 🇺🇸</div>
+          <div style="font-size:11px;color:var(--text2);margin-top:2px">Nov 10 · Oct inflation data · 8:30am ET</div>
+          <div style="font-size:11px;color:var(--yellow);margin-top:2px">Post-election read on rate direction</div>
+        </div>
+      </div>
+      <div style="height:1px;background:var(--border)"></div>
+
+      <!-- Fed FOMC Dec 9 -->
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:44px;height:44px;border-radius:10px;background:rgba(255,80,80,0.08);border:1px solid rgba(255,80,80,0.2);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0">
+          <div style="font-size:13px;font-weight:700;color:#FF6B6B;font-family:var(--mono);line-height:1" id="daysFed">—</div>
+          <div style="font-size:8px;color:var(--text2)">DAYS</div>
+        </div>
+        <div>
+          <div style="font-size:12px;font-weight:600;color:var(--text)">FOMC Rate Decision 🏦</div>
+          <div style="font-size:11px;color:var(--text2);margin-top:2px">Dec 9 · Fed interest rate call · 2pm ET</div>
+          <div style="font-size:11px;color:#FF6B6B;margin-top:2px">Cut = crypto moon · Hold/hike = headwinds</div>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -389,10 +422,23 @@ function startAgeTimer(){
 }
 
 function countdown(){
-  const days=Math.max(0,Math.ceil((new Date('2026-10-07T00:00:00+08:00')-new Date())/86400000));
-  const e1=document.getElementById('daysLeft'),e2=document.getElementById('countdown');
-  if(e1)e1.textContent=days;
-  if(e2)e2.textContent=days+' days 🇸🇬';
+  const now=new Date();
+  const kl=t=>Math.max(0,Math.ceil((new Date(t)-now)/86400000));
+  const events=[
+    {id:'daysCPI',  date:'2026-10-14T00:00:00+08:00', label:'CPI Oct 14'},
+    {id:'daysMid',  date:'2026-11-03T00:00:00+08:00', label:'Midterms Nov 3'},
+    {id:'daysCPI2', date:'2026-11-10T00:00:00+08:00', label:'CPI Nov 10'},
+    {id:'daysFed',  date:'2026-12-09T00:00:00+08:00', label:'FOMC Dec 9'},
+  ];
+  let next=null,minDays=Infinity;
+  events.forEach(ev=>{
+    const d=kl(ev.date);
+    const el=document.getElementById(ev.id);
+    if(el)el.textContent=d===0?'TODAY':d;
+    if(d<minDays){minDays=d;next=ev;}
+  });
+  const ec=document.getElementById('countdown');
+  if(ec&&next)ec.textContent=(minDays===0?'TODAY':'in '+minDays+'d')+' · '+next.label;
 }
 
 countdown();
