@@ -187,16 +187,10 @@ body{padding-bottom:calc(var(--safe-bot)+16px)}
     <div class="cprice"><div class="cprice-val" id="val-id">—</div><div class="cprice-chg nt" id="chg-id">—</div><div class="cval" id="hval-id">—</div></div>
   </div>
 
-  <div class="coin-row" id="row-doge">
-    <div class="clogo" style="background:#C2A633"><svg width="20" height="20" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#C2A633"/><text x="12" y="16.5" text-anchor="middle" font-size="12" font-weight="bold" fill="white" font-family="Arial">Ð</text></svg></div>
-    <div class="cinfo"><div class="cname">Dogecoin (DOGE) <span class="ctag">⚡ live</span></div><div class="cdetail" id="det-doge">509 coins · stop $0.088</div><div class="cbar"><div class="cbar-fill" style="width:1.5%;background:#C2A633"></div></div></div>
-    <div class="cprice"><div class="cprice-val" id="val-doge">—</div><div class="cprice-chg nt" id="chg-doge">—</div><div class="cval" id="hval-doge">—</div></div>
-  </div>
-
-  <div class="coin-row" id="row-link">
-    <div class="clogo" style="background:#2A5ADA"><svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M12 2l-2.5 1.5L7 9l2.5 1.5L12 9l2.5 1.5L17 9l-2.5-5.5L12 2zM7 10.5L4.5 12 4 16.5 7 18l2.5-1.5v-3L7 10.5zm10 0l-2.5 3v3L17 18l3-1.5-.5-4.5L17 10.5zM9.5 13.5v3l2.5 1.5 2.5-1.5v-3L12 12l-2.5 1.5z"/></svg></div>
-    <div class="cinfo"><div class="cname">Chainlink (LINK) <span class="ctag">⚡ live</span></div><div class="cdetail" id="det-link">3.23 coins · target $16.00</div><div class="cbar"><div class="cbar-fill" style="width:1.2%;background:#2A5ADA"></div></div></div>
-    <div class="cprice"><div class="cprice-val" id="val-link">—</div><div class="cprice-chg nt" id="chg-link">—</div><div class="cval" id="hval-link">—</div></div>
+  <div class="coin-row" id="row-near">
+    <div class="clogo" style="background:#00C1DE"><svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M5 5h3.5l5 7.5V5H17v14h-3.5l-5-7.5V19H5V5z"/></svg></div>
+    <div class="cinfo"><div class="cname">NEAR Protocol (NEAR) <span class="ctag">⚡ live</span></div><div class="cdetail" id="det-near">22.20 coins · buy-in $4.90</div><div class="cbar"><div class="cbar-fill" style="width:1.5%;background:#00C1DE"></div></div></div>
+    <div class="cprice"><div class="cprice-val" id="val-near">—</div><div class="cprice-chg nt" id="chg-near">—</div><div class="cval" id="hval-near">—</div></div>
   </div>
 
   <div class="coin-row" id="row-pepe">
@@ -211,11 +205,6 @@ body{padding-bottom:calc(var(--safe-bot)+16px)}
     <div class="cprice"><div class="cprice-val" id="val-pol">—</div><div class="cprice-chg nt" id="chg-pol">—</div><div class="cval" id="hval-pol">—</div></div>
   </div>
 
-  <div class="coin-row" id="row-sui">
-    <div class="clogo" style="background:#4DA2FF"><svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M12 3C9 3 6.5 5.5 6.5 9c0 2 1 3.8 2.5 5L12 22l3-8c1.5-1.2 2.5-3 2.5-5 0-3.5-2.5-6-6-6zm0 8a2.5 2.5 0 110-5 2.5 2.5 0 010 5z"/></svg></div>
-    <div class="cinfo"><div class="cname">Sui (SUI) <span class="ctag">⚡ live</span></div><div class="cdetail" id="det-sui">23 coins · stop $0.88 · target $1.265</div><div class="cbar"><div class="cbar-fill" style="width:0.6%;background:#4DA2FF"></div></div></div>
-    <div class="cprice"><div class="cprice-val" id="val-sui">—</div><div class="cprice-chg nt" id="chg-sui">—</div><div class="cval" id="hval-sui">—</div></div>
-  </div>
 
   <div class="coin-row" id="row-pump">
     <div class="clogo" style="background:#00C853"><svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M3 20l4.5-9 4 4.5 4-10.5 4.5 15H3z"/></svg></div>
@@ -237,19 +226,15 @@ body{padding-bottom:calc(var(--safe-bot)+16px)}
   <div class="panel">
     <div class="panel-header"><span class="panel-title">Target Tracker</span><span class="panel-badge green">Active</span></div>
     <div class="target-row"><div class="target-coin">KITE</div><div class="target-track"><div class="target-fill" style="width:68%;background:linear-gradient(90deg,#FF6B2B,#FFB800)"><div class="target-tip" style="background:#FFB800"></div></div></div><div class="target-info"><div class="target-pct" style="color:var(--yellow)">68%</div><div class="target-label">to $0.160</div></div></div>
-    <div class="target-row"><div class="target-coin">ADA</div><div class="target-track"><div class="target-fill" style="width:72%;background:linear-gradient(90deg,#0033AD,#4A6FE3)"><div class="target-tip" style="background:#4A6FE3"></div></div></div><div class="target-info"><div class="target-pct up">72%</div><div class="target-label">to $0.263</div></div></div>
-    <div class="target-row"><div class="target-coin">DOGE</div><div class="target-track"><div class="target-fill" style="width:59%;background:linear-gradient(90deg,#C2A633,#FFD700)"><div class="target-tip" style="background:#FFD700"></div></div></div><div class="target-info"><div class="target-pct" style="color:var(--yellow)">59%</div><div class="target-label">to $0.115</div></div></div>
-    <div class="target-row"><div class="target-coin">LINK</div><div class="target-track"><div class="target-fill" style="width:14%;background:linear-gradient(90deg,#2A5ADA,#00C9FF)"><div class="target-tip" style="background:#00C9FF"></div></div></div><div class="target-info"><div class="target-pct" style="color:var(--text2)">14%</div><div class="target-label">to $16.00</div></div></div>
-    <div class="target-row"><div class="target-coin">SUI</div><div class="target-track"><div class="target-fill" style="width:50%;background:linear-gradient(90deg,#4DA2FF,#00C9FF)"><div class="target-tip" style="background:#00C9FF"></div></div></div><div class="target-info"><div class="target-pct up">50%</div><div class="target-label">to $1.265</div></div></div>
+    <div class="target-row"><div class="target-coin">ADA</div><div class="target-track"><div class="target-fill" style="width:72%;background:linear-gradient(90deg,#0033AD,#4A6FE3)"><div class="target-tip" style="background:#4A6FE3"></div></div></div><div class="target-info"><div class="target-pct up">72%</div><div class="target-label">to $0.300</div></div></div>
+    <div class="target-row"><div class="target-coin">NEAR</div><div class="target-track"><div class="target-fill" style="width:5%;background:linear-gradient(90deg,#00C1DE,#00E5FF)"><div class="target-tip" style="background:#00E5FF"></div></div></div><div class="target-info"><div class="target-pct" style="color:var(--text2)">new</div><div class="target-label">TBD</div></div></div>
   </div>
 
   <div class="panel">
     <div class="panel-header"><span class="panel-title">Stop Losses</span><span class="panel-badge">Protected</span></div>
     <div style="padding:12px 18px;display:flex;flex-direction:column;gap:10px">
       <div class="sl-row"><span style="color:var(--text2);width:50px">KITE</span><div style="display:flex;align-items:center;gap:8px;flex:1;justify-content:flex-end"><span style="color:var(--text2);font-family:var(--mono);font-size:12px">$0.130</span><div class="sl-bar"><div class="sl-fill" style="width:85%;background:var(--yellow)"></div></div><span style="color:var(--yellow);font-size:11px;width:50px">Watch ⚠</span></div></div>
-      <div class="sl-row"><span style="color:var(--text2);width:50px">DOGE</span><div style="display:flex;align-items:center;gap:8px;flex:1;justify-content:flex-end"><span style="color:var(--text2);font-family:var(--mono);font-size:12px">$0.088</span><div class="sl-bar"><div class="sl-fill" style="width:40%;background:var(--green)"></div></div><span style="color:var(--green);font-size:11px;width:50px">Safe ✓</span></div></div>
-      <div class="sl-row"><span style="color:var(--text2);width:50px">LINK</span><div style="display:flex;align-items:center;gap:8px;flex:1;justify-content:flex-end"><span style="color:var(--text2);font-family:var(--mono);font-size:12px">$12.00</span><div class="sl-bar"><div class="sl-fill" style="width:20%;background:var(--green)"></div></div><span style="color:var(--green);font-size:11px;width:50px">Safe ✓</span></div></div>
-      <div class="sl-row"><span style="color:var(--text2);width:50px">SUI</span><div style="display:flex;align-items:center;gap:8px;flex:1;justify-content:flex-end"><span style="color:var(--text2);font-family:var(--mono);font-size:12px">$0.880</span><div class="sl-bar"><div class="sl-fill" style="width:15%;background:var(--green)"></div></div><span style="color:var(--green);font-size:11px;width:50px">Safe ✓</span></div></div>
+      <div class="sl-row"><span style="color:var(--text2);width:50px">NEAR</span><div style="display:flex;align-items:center;gap:8px;flex:1;justify-content:flex-end"><span style="color:var(--text2);font-family:var(--mono);font-size:12px">TBD</span><div class="sl-bar"><div class="sl-fill" style="width:5%;background:var(--text2)"></div></div><span style="color:var(--text2);font-size:11px;width:50px">New</span></div></div>
     </div>
   </div>
 
@@ -301,11 +286,9 @@ const HOLDINGS = {
   'cardano':        {id:'ada',   coins:635,        pDec:5},
   'kite-2':         {id:'kite',  coins:680,        pDec:4},
   'space-id':       {id:'id',    coins:833,        pDec:5},
-  'dogecoin':       {id:'doge',  coins:509,        pDec:5},
-  'chainlink':      {id:'link',  coins:3.23,       pDec:3},
+  'near':           {id:'near',  coins:22.20,      pDec:4},
   'pepe':           {id:'pepe',  coins:8978610,    pDec:9},
   'matic-network':  {id:'pol',   coins:234,        pDec:5},
-  'sui':            {id:'sui',   coins:23,         pDec:4},
   'pump-fun':       {id:'pump',  coins:3667,       pDec:6},
   'pudgy-penguins': {id:'pengu', coins:1059,       pDec:6},
 };
