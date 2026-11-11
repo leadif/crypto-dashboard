@@ -1,132 +1,216 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
+<!DOCTYPE html><html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><style rel="stylesheet" type="text/css">@charset "utf-8";
+
+:root { --bg: #0A0E1A; --bg2: #111827; --bg3: #1A2235; --border: #1E2D45; --accent: #00C9FF; --green: #10D980; --red: #FF4757; --yellow: #FFB800; --text: #E8EDF5; --text2: #7B8FAD; --text3: #4A5568; --font: 'Inter',sans-serif; --mono: 'JetBrains Mono',monospace; --safe-top: env(safe-area-inset-top,0px); --safe-bot: env(safe-area-inset-bottom,0px); }
+
+*, ::before, ::after { box-sizing: border-box; margin: 0px; padding: 0px; }
+
+html, body { background: var(--bg); color: var(--text); font-family: var(--font); min-height: 100%; -webkit-font-smoothing: antialiased; }
+
+body { padding-bottom: calc(var(--safe-bot) + 16px); }
+
+.refresh-bar { position: sticky; top: 0px; z-index: 100; background: rgba(10, 14, 26, 0.94); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: calc(var(--safe-top) + 8px) 16px 8px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+
+.refresh-bar.stale { border-bottom-color: var(--yellow); }
+
+.refresh-info { display: flex; flex-direction: column; gap: 2px; flex: 1 1 0%; min-width: 0px; }
+
+.refresh-status { font-size: 11px; font-weight: 600; color: var(--accent); display: flex; align-items: center; gap: 5px; }
+
+.refresh-bar.stale .refresh-status { color: var(--yellow); }
+
+.refresh-age { font-size: 10px; color: var(--text2); font-family: var(--mono); }
+
+.stale-warn { display: none; font-size: 10px; color: var(--yellow); font-weight: 500; }
+
+.refresh-bar.stale .stale-warn { display: block; }
+
+.refresh-btn { display: flex; align-items: center; gap: 7px; background: var(--accent); color: rgb(0, 0, 0); border: none; border-radius: 10px; padding: 9px 16px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: var(--font); white-space: nowrap; flex-shrink: 0; -webkit-tap-highlight-color: rgba(0, 201, 255, 0.3); touch-action: manipulation; appearance: none; transition: opacity 0.15s, transform 0.1s; }
+
+.refresh-btn:active { opacity: 0.8; transform: scale(0.97); }
+
+.refresh-btn:disabled { background: var(--bg3); color: var(--accent); border: 1px solid var(--accent); cursor: not-allowed; }
+
+.refresh-btn svg.spin { animation: 0.6s linear 0s infinite normal none running spin; }
+
+.live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); animation: 2s ease 0s infinite normal none running pulse; flex-shrink: 0; }
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.85); }
+}
+
+@keyframes spin {
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes flash-green {
+  0% { background: rgba(16, 217, 128, 0.18); }
+  100% { background: transparent; }
+}
+
+@keyframes flash-red {
+  0% { background: rgba(255, 71, 87, 0.18); }
+  100% { background: transparent; }
+}
+
+.flash-up { animation: 1s ease-out 0s 1 normal none running flash-green; }
+
+.flash-dn { animation: 1s ease-out 0s 1 normal none running flash-red; }
+
+.header { padding: 16px 16px 0px; max-width: 1200px; margin: 0px auto; display: flex; align-items: center; justify-content: space-between; }
+
+.header h1 { font-size: 20px; font-weight: 600; letter-spacing: -0.02em; }
+
+.header p { font-size: 12px; color: var(--text2); margin-top: 2px; }
+
+.live-pill { display: flex; align-items: center; gap: 6px; background: rgba(0, 201, 255, 0.08); border: 1px solid rgba(0, 201, 255, 0.25); border-radius: 20px; padding: 5px 12px; font-size: 11px; font-weight: 500; color: var(--accent); }
+
+.total-banner { margin: 16px auto 0px; max-width: 1200px; padding: 0px 16px; }
+
+.total-inner { background: linear-gradient(135deg,var(--bg2) 0%,#0D1929 100%); border: 1px solid var(--border); border-radius: 16px; padding: 20px 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; position: relative; overflow: hidden; }
+
+.total-inner::before { content: ""; position: absolute; top: -40px; right: -40px; width: 180px; height: 180px; background: radial-gradient(circle, rgba(0, 201, 255, 0.06) 0%, transparent 70%); pointer-events: none; }
+
+.total-label { font-size: 12px; color: var(--text2); margin-bottom: 4px; }
+
+.total-value { font-size: 36px; font-weight: 700; font-family: var(--mono); color: var(--text); letter-spacing: -0.03em; }
+
+.total-delta { font-size: 13px; font-weight: 500; color: var(--green); margin-top: 4px; }
+
+.total-stats { display: flex; gap: 24px; flex-wrap: wrap; }
+
+.stat-item { text-align: right; }
+
+.stat-label { font-size: 11px; color: var(--text2); margin-bottom: 3px; }
+
+.stat-val { font-size: 16px; font-weight: 600; color: var(--text); }
+
+.stat-val.green { color: var(--green); }
+
+.stat-val.accent { color: var(--accent); }
+
+.error-bar { display: none; margin: 8px auto 0px; max-width: 1200px; background: rgba(255, 71, 87, 0.1); border: 1px solid rgba(255, 71, 87, 0.3); border-radius: 8px; padding: 8px 14px; font-size: 12px; color: var(--red); }
+
+.error-bar.visible { display: block; }
+
+.main-grid { max-width: 1200px; margin: 16px auto 0px; padding: 0px 16px; display: grid; grid-template-columns: 1fr; gap: 12px; }
+
+@media (min-width: 900px) {
+  .main-grid { grid-template-columns: 1.2fr 0.8fr; align-items: start; }
+}
+
+.panel { background: var(--bg2); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+
+.panel-header { padding: 14px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+
+.panel-title { font-size: 12px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.06em; }
+
+.panel-badge { font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: 6px; background: rgba(0, 201, 255, 0.1); color: var(--accent); border: 1px solid rgba(0, 201, 255, 0.2); }
+
+.panel-badge.green { background: rgba(16, 217, 128, 0.1); color: var(--green); border-color: rgba(16, 217, 128, 0.2); }
+
+.panel-badge.yellow { background: rgba(255, 184, 0, 0.1); color: var(--yellow); border-color: rgba(255, 184, 0, 0.2); }
+
+.coin-row { padding: 11px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; transition: background 0.15s; }
+
+.coin-row:last-child { border-bottom: none; }
+
+.coin-row:hover { background: rgba(255, 255, 255, 0.016); }
+
+.coin-row.warn { border-left: 3px solid var(--yellow); }
+
+.clogo { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; }
+
+.cinfo { flex: 1 1 0%; min-width: 0px; }
+
+.cname { font-size: 13px; font-weight: 500; color: var(--text); display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+
+.ctag { font-size: 9px; padding: 1px 5px; border-radius: 4px; font-weight: 600; background: rgba(0, 201, 255, 0.15); color: rgb(0, 201, 255); }
+
+.cwarn { background: rgba(255, 184, 0, 0.15); color: rgb(255, 184, 0); font-size: 9px; padding: 1px 5px; border-radius: 4px; font-weight: 600; }
+
+.cdetail { font-size: 11px; color: var(--text2); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.cbar { height: 3px; background: var(--bg3); border-radius: 2px; margin-top: 4px; overflow: hidden; }
+
+.cbar-fill { height: 100%; border-radius: 2px; }
+
+.cprice { text-align: right; flex-shrink: 0; min-width: 90px; }
+
+.cval { font-size: 11px; font-weight: 600; color: var(--text2); margin-top: 2px; font-family: var(--mono); }
+
+.cprice-val { font-size: 15px; font-weight: 700; font-family: var(--mono); color: var(--text); line-height: 1.2; }
+
+.cprice-chg { font-size: 11px; font-weight: 600; margin-top: 3px; }
+
+.up { color: var(--green); }
+
+.dn { color: var(--red); }
+
+.nt { color: var(--text2); }
+
+.target-row { padding: 11px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; }
+
+.target-row:last-child { border-bottom: none; }
+
+.target-coin { font-size: 12px; font-weight: 600; color: var(--text); width: 50px; flex-shrink: 0; }
+
+.target-track { flex: 1 1 0%; height: 6px; background: var(--bg3); border-radius: 3px; position: relative; }
+
+.target-fill { height: 100%; border-radius: 3px; position: relative; transition: width 0.4s; }
+
+.target-tip { position: absolute; right: -1px; top: -4px; width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--bg2); }
+
+.target-info { text-align: right; flex-shrink: 0; width: 70px; }
+
+.target-pct { font-size: 12px; font-weight: 600; }
+
+.target-label { font-size: 10px; color: var(--text2); margin-top: 1px; }
+
+.sl-row { display: flex; justify-content: space-between; align-items: center; font-size: 12px; }
+
+.sl-bar { width: 60px; height: 4px; background: var(--bg3); border-radius: 2px; overflow: hidden; }
+
+.sl-fill { height: 100%; border-radius: 2px; }
+
+.footer { max-width: 1200px; margin: 12px auto 0px; padding: 0px 16px 8px; font-size: 10px; color: var(--text3); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px; }
+
+::-webkit-scrollbar { width: 4px; }
+
+::-webkit-scrollbar-track { background: var(--bg); }
+
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+@media (max-width: 400px) {
+  .total-value { font-size: 28px; }
+  .total-stats { gap: 14px; }
+  .cprice-val { font-size: 13px; }
+  .refresh-btn { padding: 8px 12px; font-size: 11px; }
+}</style>
+
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Fidael's Crypto Dashboard</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<style>
-:root{
-  --bg:#0A0E1A;--bg2:#111827;--bg3:#1A2235;--border:#1E2D45;
-  --accent:#00C9FF;--green:#10D980;--red:#FF4757;--yellow:#FFB800;
-  --text:#E8EDF5;--text2:#7B8FAD;--text3:#4A5568;
-  --font:'Inter',sans-serif;--mono:'JetBrains Mono',monospace;
-  --safe-top:env(safe-area-inset-top,0px);--safe-bot:env(safe-area-inset-bottom,0px);
-}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html,body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100%;-webkit-font-smoothing:antialiased}
-body{padding-bottom:calc(var(--safe-bot)+16px)}
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
 
-/* REFRESH BAR */
-.refresh-bar{position:sticky;top:0;z-index:100;background:rgba(10,14,26,0.94);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:calc(var(--safe-top)+8px) 16px 8px;display:flex;align-items:center;justify-content:space-between;gap:10px}
-.refresh-bar.stale{border-bottom-color:var(--yellow)}
-.refresh-info{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0}
-.refresh-status{font-size:11px;font-weight:600;color:var(--accent);display:flex;align-items:center;gap:5px}
-.refresh-bar.stale .refresh-status{color:var(--yellow)}
-.refresh-age{font-size:10px;color:var(--text2);font-family:var(--mono)}
-.stale-warn{display:none;font-size:10px;color:var(--yellow);font-weight:500}
-.refresh-bar.stale .stale-warn{display:block}
-.refresh-btn{display:flex;align-items:center;gap:7px;background:var(--accent);color:#000;border:none;border-radius:10px;padding:9px 16px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--font);white-space:nowrap;flex-shrink:0;-webkit-tap-highlight-color:rgba(0,201,255,0.3);touch-action:manipulation;-webkit-appearance:none;transition:opacity .15s,transform .1s}
-.refresh-btn:active{opacity:.8;transform:scale(0.97)}
-.refresh-btn:disabled{background:var(--bg3);color:var(--accent);border:1px solid var(--accent);cursor:not-allowed}
-.refresh-btn svg.spin{animation:spin .6s linear infinite}
-.live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;flex-shrink:0}
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.85)}}
-@keyframes spin{to{transform:rotate(360deg)}}
-@keyframes flash-green{0%{background:rgba(16,217,128,0.18)}100%{background:transparent}}
-@keyframes flash-red{0%{background:rgba(255,71,87,0.18)}100%{background:transparent}}
-.flash-up{animation:flash-green 1s ease-out}
-.flash-dn{animation:flash-red 1s ease-out}
-
-.header{padding:16px 16px 0;max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
-.header h1{font-size:20px;font-weight:600;letter-spacing:-.02em}
-.header p{font-size:12px;color:var(--text2);margin-top:2px}
-.live-pill{display:flex;align-items:center;gap:6px;background:rgba(0,201,255,0.08);border:1px solid rgba(0,201,255,0.25);border-radius:20px;padding:5px 12px;font-size:11px;font-weight:500;color:var(--accent)}
-
-.total-banner{margin:16px auto 0;max-width:1200px;padding:0 16px}
-.total-inner{background:linear-gradient(135deg,var(--bg2) 0%,#0D1929 100%);border:1px solid var(--border);border-radius:16px;padding:20px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;position:relative;overflow:hidden}
-.total-inner::before{content:'';position:absolute;top:-40px;right:-40px;width:180px;height:180px;background:radial-gradient(circle,rgba(0,201,255,0.06) 0%,transparent 70%);pointer-events:none}
-.total-label{font-size:12px;color:var(--text2);margin-bottom:4px}
-.total-value{font-size:36px;font-weight:700;font-family:var(--mono);color:var(--text);letter-spacing:-.03em}
-.total-delta{font-size:13px;font-weight:500;color:var(--green);margin-top:4px}
-.total-stats{display:flex;gap:24px;flex-wrap:wrap}
-.stat-item{text-align:right}
-.stat-label{font-size:11px;color:var(--text2);margin-bottom:3px}
-.stat-val{font-size:16px;font-weight:600;color:var(--text)}
-.stat-val.green{color:var(--green)}
-.stat-val.accent{color:var(--accent)}
-
-.error-bar{display:none;margin:8px 16px 0;max-width:1200px;margin-left:auto;margin-right:auto;background:rgba(255,71,87,0.1);border:1px solid rgba(255,71,87,0.3);border-radius:8px;padding:8px 14px;font-size:12px;color:var(--red)}
-.error-bar.visible{display:block}
-
-.main-grid{max-width:1200px;margin:16px auto 0;padding:0 16px;display:grid;grid-template-columns:1fr;gap:12px}
-@media(min-width:900px){.main-grid{grid-template-columns:1.2fr 0.8fr;align-items:start}}
-
-.panel{background:var(--bg2);border:1px solid var(--border);border-radius:16px;overflow:hidden}
-.panel-header{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
-.panel-title{font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.06em}
-.panel-badge{font-size:10px;font-weight:600;padding:3px 8px;border-radius:6px;background:rgba(0,201,255,0.1);color:var(--accent);border:1px solid rgba(0,201,255,0.2)}
-.panel-badge.green{background:rgba(16,217,128,0.1);color:var(--green);border-color:rgba(16,217,128,0.2)}
-.panel-badge.yellow{background:rgba(255,184,0,0.1);color:var(--yellow);border-color:rgba(255,184,0,0.2)}
-
-.coin-row{padding:11px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;transition:background .15s}
-.coin-row:last-child{border-bottom:none}
-.coin-row:hover{background:rgba(255,255,255,0.015)}
-.coin-row.warn{border-left:3px solid var(--yellow)}
-.clogo{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden}
-.cinfo{flex:1;min-width:0}
-.cname{font-size:13px;font-weight:500;color:var(--text);display:flex;align-items:center;gap:5px;flex-wrap:wrap}
-.ctag{font-size:9px;padding:1px 5px;border-radius:4px;font-weight:600;background:rgba(0,201,255,0.15);color:#00C9FF}
-.cwarn{background:rgba(255,184,0,0.15);color:#FFB800;font-size:9px;padding:1px 5px;border-radius:4px;font-weight:600}
-.cdetail{font-size:11px;color:var(--text2);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.cbar{height:3px;background:var(--bg3);border-radius:2px;margin-top:4px;overflow:hidden}
-.cbar-fill{height:100%;border-radius:2px}
-
-/* PRICE DISPLAY — prominent, right-aligned */
-.cprice{text-align:right;flex-shrink:0;min-width:90px}.cval{font-size:11px;font-weight:600;color:var(--text2);margin-top:2px;font-family:var(--mono)}
-.cprice-val{font-size:15px;font-weight:700;font-family:var(--mono);color:var(--text);line-height:1.2}
-.cprice-chg{font-size:11px;font-weight:600;margin-top:3px}
-.up{color:var(--green)}.dn{color:var(--red)}.nt{color:var(--text2)}
-
-.target-row{padding:11px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
-.target-row:last-child{border-bottom:none}
-.target-coin{font-size:12px;font-weight:600;color:var(--text);width:50px;flex-shrink:0}
-.target-track{flex:1;height:6px;background:var(--bg3);border-radius:3px;position:relative}
-.target-fill{height:100%;border-radius:3px;position:relative}
-.target-tip{position:absolute;right:-1px;top:-4px;width:14px;height:14px;border-radius:50%;border:2px solid var(--bg2)}
-.target-info{text-align:right;flex-shrink:0;width:70px}
-.target-pct{font-size:12px;font-weight:600}
-.target-label{font-size:10px;color:var(--text2);margin-top:1px}
-
-.sl-row{display:flex;justify-content:space-between;align-items:center;font-size:12px}
-.sl-bar{width:60px;height:4px;background:var(--bg3);border-radius:2px;overflow:hidden}
-.sl-fill{height:100%;border-radius:2px}
-
-.footer{max-width:1200px;margin:12px auto 0;padding:0 16px 8px;font-size:10px;color:var(--text3);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px}
-::-webkit-scrollbar{width:4px}
-::-webkit-scrollbar-track{background:var(--bg)}
-::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
-@media(max-width:400px){.total-value{font-size:28px}.total-stats{gap:14px}.cprice-val{font-size:13px}.refresh-btn{padding:8px 12px;font-size:11px}}
-</style>
 </head>
 <body>
 
 <!-- REFRESH BAR -->
 <div class="refresh-bar" id="refreshBar">
   <div class="refresh-info">
-    <div class="refresh-status"><div class="live-dot"></div><span id="statusText">Fetching live prices…</span></div>
-    <div class="refresh-age" id="ageText">Please wait</div>
+    <div class="refresh-status"><div class="live-dot"></div><span id="statusText">Loading prices…</span></div>
+    <div class="refresh-age" id="ageText">—</div>
     <div class="stale-warn">⚠ Prices over 15 min old — tap Refresh</div>
   </div>
-  <button class="refresh-btn" id="refreshBtn" onclick="fetchAllPrices()" disabled>
-    <svg id="refreshIcon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.65 6.35A7.96 7.96 0 0012 4a8 8 0 00-8 8 8 8 0 008 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18a6 6 0 01-6-6 6 6 0 016-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+  <button class="refresh-btn" id="refreshBtn">
+    <svg id="refreshIcon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.65 6.35A7.96 7.96 0 0012 4a8 8 0 00-8 8 8 8 0 008 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18a6 6 0 01-6-6 6 6 0 016-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"></path></svg>
     Refresh Prices
   </button>
 </div>
 
 <!-- HEADER -->
 <div class="header">
-  <div><h1>Fidael's Crypto Portfolio</h1><p id="lastUpdated">Loading live prices…</p></div>
+  <div><h1>Fidael's Crypto Portfolio</h1><p id="lastUpdated">Updated: —</p></div>
   <div class="live-pill"><div class="live-dot"></div>CoinGecko live</div>
 </div>
 
@@ -134,11 +218,11 @@ body{padding-bottom:calc(var(--safe-bot)+16px)}
 <div class="total-banner"><div class="total-inner">
   <div>
     <div class="total-label">Total portfolio value</div>
-    <div class="total-value" id="totalValue">—</div>
+    <div class="total-value" id="totalValue">$—</div>
     <div class="total-delta" id="totalDelta">6 coins + USDT · loading…</div>
   </div>
   <div class="total-stats">
-    <div class="stat-item"><div class="stat-label">Biggest holding</div><div class="stat-val" id="biggestHolding">BNB</div></div>
+    <div class="stat-item"><div class="stat-label">Biggest holding</div><div class="stat-val" id="biggestHolding">—</div></div>
     <div class="stat-item"><div class="stat-label">On Binance Earn</div><div class="stat-val green">XRP · NEAR · USDT 💰</div></div>
     <div class="stat-item"><div class="stat-label">Next event</div><div class="stat-val accent" id="countdown">—</div></div>
   </div>
@@ -152,43 +236,43 @@ body{padding-bottom:calc(var(--safe-bot)+16px)}
   <div class="panel-header"><span class="panel-title">Your Holdings</span><span class="panel-badge">6 coins + USDT · live</span></div>
 
   <div class="coin-row" id="row-bnb">
-    <div class="clogo" style="background:#F3BA2F"><svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 2L8.5 5.5 10 7l2-2 2 2 1.5-1.5L12 2zM6.5 8L5 9.5 6.5 11 8 9.5 6.5 8zm11 0L16 9.5l1.5 1.5 1.5-1.5L17.5 8zM12 8l-4 4 4 4 4-4-4-4zm0 2.5L13.5 12 12 13.5 10.5 12 12 10.5zM6.5 13L5 14.5 6.5 16l1.5-1.5L6.5 13zm11 0L16 14.5l1.5 1.5 1.5-1.5L17.5 13zM12 17l-1.5 1.5 1.5 1.5 1.5-1.5L12 17z"/></svg></div>
-    <div class="cinfo"><div class="cname">BNB <span class="ctag">⚡ live</span></div><div class="cdetail" id="det-bnb">2.59 coins · 50.7%</div><div class="cbar"><div class="cbar-fill" style="width:100%;background:#F3BA2F"></div></div></div>
+    <div class="clogo" style="background:#F3BA2F"><svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 2L8.5 5.5 10 7l2-2 2 2 1.5-1.5L12 2zM6.5 8L5 9.5 6.5 11 8 9.5 6.5 8zm11 0L16 9.5l1.5 1.5 1.5-1.5L17.5 8zM12 8l-4 4 4 4 4-4-4-4zm0 2.5L13.5 12 12 13.5 10.5 12 12 10.5zM6.5 13L5 14.5 6.5 16l1.5-1.5L6.5 13zm11 0L16 14.5l1.5 1.5 1.5-1.5L17.5 13zM12 17l-1.5 1.5 1.5 1.5 1.5-1.5L12 17z"></path></svg></div>
+    <div class="cinfo"><div class="cname">BNB <span class="ctag">⚡ live</span></div><div class="cdetail" id="det-bnb">2.59 coins</div><div class="cbar"><div class="cbar-fill" style="width:100%;background:#F3BA2F"></div></div></div>
     <div class="cprice"><div class="cprice-val" id="val-bnb">—</div><div class="cprice-chg nt" id="chg-bnb">—</div><div class="cval" id="hval-bnb">—</div></div>
   </div>
 
   <div class="coin-row" id="row-xrp">
-    <div class="clogo" style="background:#00aae4"><svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M7 3L12 8l5-5h3l-6.5 6.5c-.83.83-2.17.83-3 0L4 3h3zm10 18l-5-5-5 5H4l6.5-6.5c.83-.83 2.17-.83 3 0L20 21h-3z"/></svg></div>
+    <div class="clogo" style="background:#00aae4"><svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M7 3L12 8l5-5h3l-6.5 6.5c-.83.83-2.17.83-3 0L4 3h3zm10 18l-5-5-5 5H4l6.5-6.5c.83-.83 2.17-.83 3 0L20 21h-3z"></path></svg></div>
     <div class="cinfo"><div class="cname">XRP <span class="ctag">⚡ live</span></div><div class="cdetail" id="det-xrp">1,138 coins · Binance Earn 💰</div><div class="cbar"><div class="cbar-fill" style="width:84%;background:#00aae4"></div></div></div>
     <div class="cprice"><div class="cprice-val" id="val-xrp">—</div><div class="cprice-chg nt" id="chg-xrp">—</div><div class="cval" id="hval-xrp">—</div></div>
   </div>
 
   <div class="coin-row" id="row-btc">
-    <div class="clogo" style="background:#F7931A"><svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M14.5 10.17c.34-.2.58-.53.58-.97 0-.9-.72-1.2-1.83-1.2H11v2.4h2.25c.5 0 1-.06 1.25-.23zm.25 2.46c0-.97-.72-1.33-1.92-1.33H11v2.7h1.83c1.3 0 1.92-.5 1.92-1.37zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm2.38 11.45c0 1.4-1.07 2.05-2.63 2.05H9.5v2h-1v-2H7.5v-7h1v-2h1.5v2h2.75c1.5 0 2.38.72 2.38 2 0 .65-.3 1.15-.75 1.47.67.33 1 .9 1 1.48z"/></svg></div>
-    <div class="cinfo"><div class="cname">Bitcoin (BTC) <span class="ctag">⚡ live</span></div><div class="cdetail" id="det-btc">0.00643 coins · 13.6%</div><div class="cbar"><div class="cbar-fill" style="width:27%;background:#F7931A"></div></div></div>
+    <div class="clogo" style="background:#F7931A"><svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M14.5 10.17c.34-.2.58-.53.58-.97 0-.9-.72-1.2-1.83-1.2H11v2.4h2.25c.5 0 1-.06 1.25-.23zm.25 2.46c0-.97-.72-1.33-1.92-1.33H11v2.7h1.83c1.3 0 1.92-.5 1.92-1.37zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm2.38 11.45c0 1.4-1.07 2.05-2.63 2.05H9.5v2h-1v-2H7.5v-7h1v-2h1.5v2h2.75c1.5 0 2.38.72 2.38 2 0 .65-.3 1.15-.75 1.47.67.33 1 .9 1 1.48z"></path></svg></div>
+    <div class="cinfo"><div class="cname">Bitcoin (BTC) <span class="ctag">⚡ live</span></div><div class="cdetail" id="det-btc">0.00643 coins</div><div class="cbar"><div class="cbar-fill" style="width:27%;background:#F7931A"></div></div></div>
     <div class="cprice"><div class="cprice-val" id="val-btc">—</div><div class="cprice-chg nt" id="chg-btc">—</div><div class="cval" id="hval-btc">—</div></div>
   </div>
 
   <div class="coin-row" id="row-ada">
-    <div class="clogo" style="background:#0033AD"><svg width="18" height="18" viewBox="0 0 24 24" fill="white"><circle cx="12" cy="4" r="1.5"/><circle cx="12" cy="20" r="1.5"/><circle cx="4" cy="8" r="1.5"/><circle cx="20" cy="8" r="1.5"/><circle cx="4" cy="16" r="1.5"/><circle cx="20" cy="16" r="1.5"/><circle cx="7" cy="6" r="1"/><circle cx="17" cy="6" r="1"/><circle cx="7" cy="18" r="1"/><circle cx="17" cy="18" r="1"/><circle cx="12" cy="12" r="2"/></svg></div>
+    <div class="clogo" style="background:#0033AD"><svg width="18" height="18" viewBox="0 0 24 24" fill="white"><circle cx="12" cy="4" r="1.5"></circle><circle cx="12" cy="20" r="1.5"></circle><circle cx="4" cy="8" r="1.5"></circle><circle cx="20" cy="8" r="1.5"></circle><circle cx="4" cy="16" r="1.5"></circle><circle cx="20" cy="16" r="1.5"></circle><circle cx="7" cy="6" r="1"></circle><circle cx="17" cy="6" r="1"></circle><circle cx="7" cy="18" r="1"></circle><circle cx="17" cy="18" r="1"></circle><circle cx="12" cy="12" r="2"></circle></svg></div>
     <div class="cinfo"><div class="cname">Cardano (ADA) <span class="ctag">⚡ live</span></div><div class="cdetail" id="det-ada">635 coins · Sell 318@$0.30</div><div class="cbar"><div class="cbar-fill" style="width:8%;background:#0033AD"></div></div></div>
     <div class="cprice"><div class="cprice-val" id="val-ada">—</div><div class="cprice-chg nt" id="chg-ada">—</div><div class="cval" id="hval-ada">—</div></div>
   </div>
 
   <div class="coin-row" id="row-kite">
-    <div class="clogo" style="background:#FF6B2B"><svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M12 2L4 12l8 10 8-10L12 2zm0 3.5L17.5 12 12 18.5 6.5 12 12 5.5z"/></svg></div>
+    <div class="clogo" style="background:#FF6B2B"><svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M12 2L4 12l8 10 8-10L12 2zm0 3.5L17.5 12 12 18.5 6.5 12 12 5.5z"></path></svg></div>
     <div class="cinfo"><div class="cname">KITE <span class="ctag">⚡ live</span></div><div class="cdetail" id="det-kite">680 coins · Sell 340@$0.160 · 340@$0.170</div><div class="cbar"><div class="cbar-fill" style="width:3%;background:#FF6B2B"></div></div></div>
     <div class="cprice"><div class="cprice-val" id="val-kite">—</div><div class="cprice-chg nt" id="chg-kite">—</div><div class="cval" id="hval-kite">—</div></div>
   </div>
 
   <div class="coin-row" id="row-near">
-    <div class="clogo" style="background:#00C1DE"><svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M5 5h3.5l5 7.5V5H17v14h-3.5l-5-7.5V19H5V5z"/></svg></div>
+    <div class="clogo" style="background:#00C1DE"><svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M5 5h3.5l5 7.5V5H17v14h-3.5l-5-7.5V19H5V5z"></path></svg></div>
     <div class="cinfo"><div class="cname">NEAR Protocol (NEAR) <span class="ctag">⚡ live</span></div><div class="cdetail" id="det-near">22.20 coins · buy-in $4.90 · Binance Earn 💰</div><div class="cbar"><div class="cbar-fill" style="width:1.5%;background:#00C1DE"></div></div></div>
     <div class="cprice"><div class="cprice-val" id="val-near">—</div><div class="cprice-chg nt" id="chg-near">—</div><div class="cval" id="hval-near">—</div></div>
   </div>
 
   <div class="coin-row" id="row-usdt">
-    <div class="clogo" style="background:#26A17B"><svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M5 5h14v3h-5.5v2.1c2.9.2 5 .9 5 1.7s-2.1 1.5-5 1.7V19h-3v-5.5c-2.9-.2-5-.9-5-1.7s2.1-1.5 5-1.7V8H5V5zm5.5 6.1c-1.8.1-3 .4-3 .7s1.2.6 3 .7v-1.4zm3 0v1.4c1.8-.1 3-.4 3-.7s-1.2-.6-3-.7z"/></svg></div>
+    <div class="clogo" style="background:#26A17B"><svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M5 5h14v3h-5.5v2.1c2.9.2 5 .9 5 1.7s-2.1 1.5-5 1.7V19h-3v-5.5c-2.9-.2-5-.9-5-1.7s2.1-1.5 5-1.7V8H5V5zm5.5 6.1c-1.8.1-3 .4-3 .7s1.2.6 3 .7v-1.4zm3 0v1.4c1.8-.1 3-.4 3-.7s-1.2-.6-3-.7z"></path></svg></div>
     <div class="cinfo"><div class="cname">Tether (USDT) <span class="ctag">💵 cash</span></div><div class="cdetail" id="det-usdt">109.00 USDT · Binance Earn 💰 · ready to deploy</div><div class="cbar"><div class="cbar-fill" style="width:6%;background:#26A17B"></div></div></div>
     <div class="cprice"><div class="cprice-val" id="val-usdt">—</div><div class="cprice-chg nt" id="chg-usdt">—</div><div class="cval" id="hval-usdt">—</div></div>
   </div>
@@ -200,9 +284,9 @@ body{padding-bottom:calc(var(--safe-bot)+16px)}
 
   <div class="panel">
     <div class="panel-header"><span class="panel-title">Target Tracker</span><span class="panel-badge green">Active</span></div>
-    <div class="target-row"><div class="target-coin">KITE</div><div class="target-track"><div class="target-fill" style="width:68%;background:linear-gradient(90deg,#FF6B2B,#FFB800)"><div class="target-tip" style="background:#FFB800"></div></div></div><div class="target-info"><div class="target-pct" style="color:var(--yellow)">68%</div><div class="target-label">to $0.160</div></div></div>
-    <div class="target-row"><div class="target-coin">ADA</div><div class="target-track"><div class="target-fill" style="width:72%;background:linear-gradient(90deg,#0033AD,#4A6FE3)"><div class="target-tip" style="background:#4A6FE3"></div></div></div><div class="target-info"><div class="target-pct up">72%</div><div class="target-label">to $0.300</div></div></div>
-    <div class="target-row"><div class="target-coin">NEAR</div><div class="target-track"><div class="target-fill" style="width:5%;background:linear-gradient(90deg,#00C1DE,#00E5FF)"><div class="target-tip" style="background:#00E5FF"></div></div></div><div class="target-info"><div class="target-pct" style="color:var(--text2)">new</div><div class="target-label">TBD</div></div></div>
+    <div class="target-row"><div class="target-coin">KITE</div><div class="target-track"><div class="target-fill" id="tgtfill-kite" style="width:0%;background:linear-gradient(90deg,#FF6B2B,#FFB800)"><div class="target-tip" style="background:#FFB800"></div></div></div><div class="target-info"><div class="target-pct" id="tgtpct-kite" style="color:var(--yellow)">—</div><div class="target-label">to $0.160</div></div></div>
+    <div class="target-row"><div class="target-coin">ADA</div><div class="target-track"><div class="target-fill" id="tgtfill-ada" style="width:0%;background:linear-gradient(90deg,#0033AD,#4A6FE3)"><div class="target-tip" style="background:#4A6FE3"></div></div></div><div class="target-info"><div class="target-pct" id="tgtpct-ada" style="color:#4A6FE3">—</div><div class="target-label">to $0.300</div></div></div>
+    <div class="target-row"><div class="target-coin">NEAR</div><div class="target-track"><div class="target-fill" id="tgtfill-near" style="width:0%;background:linear-gradient(90deg,#00C1DE,#00E5FF)"><div class="target-tip" style="background:#00E5FF"></div></div></div><div class="target-info"><div class="target-pct" id="tgtpct-near" style="color:var(--text2)">—</div><div class="target-label">to buy-in $4.90</div></div></div>
   </div>
 
   <div class="panel">
@@ -217,48 +301,6 @@ body{padding-bottom:calc(var(--safe-bot)+16px)}
     <div class="panel-header"><span class="panel-title">Market Events</span><span class="panel-badge yellow">Watch</span></div>
     <div style="padding:14px 18px;display:flex;flex-direction:column;gap:12px">
 
-      <!-- Fed FOMC Oct 28 -->
-      <div style="display:flex;align-items:center;gap:12px">
-        <div style="width:44px;height:44px;border-radius:10px;background:rgba(255,80,80,0.08);border:1px solid rgba(255,80,80,0.2);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0">
-          <div style="font-size:13px;font-weight:700;color:#FF6B6B;font-family:var(--mono);line-height:1" id="daysFedOct">—</div>
-          <div style="font-size:8px;color:var(--text2)">DAYS</div>
-        </div>
-        <div>
-          <div style="font-size:12px;font-weight:600;color:var(--text)">FOMC Rate Decision 🏦</div>
-          <div style="font-size:11px;color:var(--text2);margin-top:2px">Oct 28 · 2pm ET (Oct 29 · 2am KL) · press conf 2:30pm ET</div>
-          <div style="font-size:11px;color:#FF6B6B;margin-top:2px">First Fed call since hot Sep CPI · hawkish tone = sell pressure</div>
-        </div>
-      </div>
-      <div style="height:1px;background:var(--border)"></div>
-
-      <!-- US Midterms Nov 3 -->
-      <div style="display:flex;align-items:center;gap:12px">
-        <div style="width:44px;height:44px;border-radius:10px;background:rgba(0,201,255,0.08);border:1px solid rgba(0,201,255,0.2);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0">
-          <div style="font-size:13px;font-weight:700;color:var(--accent);font-family:var(--mono);line-height:1" id="daysMid">—</div>
-          <div style="font-size:8px;color:var(--text2)">DAYS</div>
-        </div>
-        <div>
-          <div style="font-size:12px;font-weight:600;color:var(--text)">US Midterm Elections 🗳️</div>
-          <div style="font-size:11px;color:var(--text2);margin-top:2px">Nov 3 · Congress majority at stake</div>
-          <div style="font-size:11px;color:var(--accent);margin-top:2px">Crypto-friendly Congress = sustained bull run</div>
-        </div>
-      </div>
-      <div style="height:1px;background:var(--border)"></div>
-
-      <!-- US CPI Nov 10 -->
-      <div style="display:flex;align-items:center;gap:12px">
-        <div style="width:44px;height:44px;border-radius:10px;background:rgba(255,184,0,0.08);border:1px solid rgba(255,184,0,0.2);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0">
-          <div style="font-size:13px;font-weight:700;color:var(--yellow);font-family:var(--mono);line-height:1" id="daysCPI2">—</div>
-          <div style="font-size:8px;color:var(--text2)">DAYS</div>
-        </div>
-        <div>
-          <div style="font-size:12px;font-weight:600;color:var(--text)">US CPI Report 🇺🇸</div>
-          <div style="font-size:11px;color:var(--text2);margin-top:2px">Nov 10 · Oct inflation data · 8:30am ET (9:30pm KL)</div>
-          <div style="font-size:11px;color:var(--yellow);margin-top:2px">Post-election read on rate direction</div>
-        </div>
-      </div>
-      <div style="height:1px;background:var(--border)"></div>
-
       <!-- FOMC Minutes Nov 18 -->
       <div style="display:flex;align-items:center;gap:12px">
         <div style="width:44px;height:44px;border-radius:10px;background:rgba(0,201,255,0.08);border:1px solid rgba(0,201,255,0.2);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0">
@@ -268,7 +310,7 @@ body{padding-bottom:calc(var(--safe-bot)+16px)}
         <div>
           <div style="font-size:12px;font-weight:600;color:var(--text)">FOMC Minutes 📄</div>
           <div style="font-size:11px;color:var(--text2);margin-top:2px">Nov 18 · Oct meeting minutes · 2pm ET (Nov 19 · 3am KL)</div>
-          <div style="font-size:11px;color:var(--accent);margin-top:2px">How close the Fed came to hiking</div>
+          <div style="font-size:11px;color:var(--accent);margin-top:2px">How many members already wanted a hike</div>
         </div>
       </div>
       <div style="height:1px;background:var(--border)"></div>
@@ -296,7 +338,21 @@ body{padding-bottom:calc(var(--safe-bot)+16px)}
         <div>
           <div style="font-size:12px;font-weight:600;color:var(--text)">FOMC Rate Decision 🏦</div>
           <div style="font-size:11px;color:var(--text2);margin-top:2px">Dec 9 · Fed interest rate call · 2pm ET (Dec 10 · 3am KL)</div>
-          <div style="font-size:11px;color:#FF6B6B;margin-top:2px">Cut = crypto moon · Hold/hike = headwinds</div>
+          <div style="font-size:11px;color:#FF6B6B;margin-top:2px">25bp hike ~85–89% priced · surprise hold = relief · 50bp = more pain</div>
+        </div>
+      </div>
+      <div style="height:1px;background:var(--border)"></div>
+
+      <!-- US CPI Dec 10 -->
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:44px;height:44px;border-radius:10px;background:rgba(255,184,0,0.08);border:1px solid rgba(255,184,0,0.2);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0">
+          <div style="font-size:13px;font-weight:700;color:var(--yellow);font-family:var(--mono);line-height:1" id="daysCPI3">—</div>
+          <div style="font-size:8px;color:var(--text2)">DAYS</div>
+        </div>
+        <div>
+          <div style="font-size:12px;font-weight:600;color:var(--text)">US CPI Report 🇺🇸</div>
+          <div style="font-size:11px;color:var(--text2);margin-top:2px">Dec 10 · Nov inflation data · 8:30am ET (9:30pm KL)</div>
+          <div style="font-size:11px;color:var(--yellow);margin-top:2px">Lands the day after the Fed · no buys before it</div>
         </div>
       </div>
 
@@ -309,8 +365,8 @@ body{padding-bottom:calc(var(--safe-bot)+16px)}
 <div class="footer">
   <span>⚡ CoinGecko API · live prices · auto-refreshes every 60s</span>
   <span style="display:flex;align-items:center;gap:8px">
-    <span style="background:rgba(0,201,255,0.08);border:1px solid rgba(0,201,255,0.2);border-radius:6px;padding:3px 10px;font-size:10px;color:var(--accent);font-weight:600">🦅 Hawk build · 27 Oct 2026 · 09:05 KL</span>
-    <span style="font-family:var(--mono);font-size:10px;color:var(--text3)" id="footerTime"></span>
+    <span style="background:rgba(0,201,255,0.08);border:1px solid rgba(0,201,255,0.2);border-radius:6px;padding:3px 10px;font-size:10px;color:var(--accent);font-weight:600">🦅 Hawk build · 11 Nov 2026 · 09:30 KL</span>
+    <span style="font-family:var(--mono);font-size:10px;color:var(--text3)" id="footerTime">—</span>
   </span>
 </div>
 
@@ -325,10 +381,13 @@ const HOLDINGS = {
   'tether':         {id:'usdt',  coins:109.00,     pDec:4},
 };
 
+// Sell / reference targets for the Target Tracker (progress = price ÷ target)
+const TARGETS = { kite:0.160, ada:0.300, near:4.90 };
+
 const CG_URL = 'https://api.coingecko.com/api/v3/simple/price?ids=' +
   Object.keys(HOLDINGS).join(',') + '&vs_currencies=usd&include_24hr_change=true';
 
-let lastFetch=null, ageInterval=null, autoTimer=null;
+let lastFetch=null, ageInterval=null;
 
 function flash(id,dir){
   const r=document.getElementById('row-'+id);
@@ -342,6 +401,14 @@ function fmt(p,dec){
   if(p>=1000) return '$'+p.toLocaleString('en',{maximumFractionDigits:0});
   if(p>=1)    return '$'+p.toFixed(dec||2);
   return '$'+p.toFixed(dec||5);
+}
+
+function updateTarget(id,price){
+  const t=TARGETS[id]; if(!t)return;
+  const pct=Math.max(0,Math.min(100,price/t*100));
+  const f=document.getElementById('tgtfill-'+id), p=document.getElementById('tgtpct-'+id);
+  if(f) f.style.width=pct.toFixed(0)+'%';
+  if(p) p.textContent=pct.toFixed(0)+'%';
 }
 
 async function fetchAllPrices(){
@@ -358,6 +425,7 @@ async function fetchAllPrices(){
     const data=await res.json();
 
     let total=0,bigVal=0,bigSym='',failCount=0;
+    const vals={};
 
     Object.entries(HOLDINGS).forEach(([cgId,h])=>{
       const info=data[cgId];
@@ -365,14 +433,14 @@ async function fetchAllPrices(){
       const price=info.usd;
       const chg=info.usd_24h_change||0;
       const val=h.coins*price;
+      vals[h.id]=val;
       total+=val;
       if(val>bigVal){bigVal=val;bigSym=h.id.toUpperCase();}
 
-      const oldEl=document.getElementById('val-'+h.id);
-      const oldVal=parseFloat(oldEl?.textContent?.replace(/[^0-9.]/g,'')||0);
-      flash(h.id,price>=oldVal?'up':'dn');
-
       const valEl=document.getElementById('val-'+h.id);
+      const oldVal=parseFloat((valEl?.textContent||'').replace(/[^0-9.]/g,''))||0;
+      if(oldVal) flash(h.id,price>=oldVal?'up':'dn');
+
       const chgEl=document.getElementById('chg-'+h.id);
       const hvalEl=document.getElementById('hval-'+h.id);
       if(valEl) valEl.textContent=fmt(price,h.pDec);
@@ -380,11 +448,15 @@ async function fetchAllPrices(){
         chgEl.textContent=(chg>=0?'▲':'▼')+Math.abs(chg).toFixed(2)+'%';
         chgEl.className='cprice-chg '+(chg>=0?'up':'dn');
       }
-      if(hvalEl){
-        const hval=h.coins*price;
-        hvalEl.textContent=hval>=1000?'$'+hval.toLocaleString('en',{maximumFractionDigits:0}):'$'+hval.toFixed(2);
-      }
+      if(hvalEl) hvalEl.textContent=val>=1000?'$'+val.toLocaleString('en',{maximumFractionDigits:0}):'$'+val.toFixed(2);
+      updateTarget(h.id,price);
     });
+
+    // share of portfolio for BNB and BTC
+    if(total){
+      if(vals.bnb!=null) document.getElementById('det-bnb').textContent='2.59 coins · '+(vals.bnb/total*100).toFixed(1)+'%';
+      if(vals.btc!=null) document.getElementById('det-btc').textContent='0.00643 coins · '+(vals.btc/total*100).toFixed(1)+'%';
+    }
 
     document.getElementById('totalValue').textContent='$'+total.toLocaleString('en',{maximumFractionDigits:0});
     document.getElementById('totalDelta').textContent='6 coins + USDT · CoinGecko live'+(failCount?' · '+failCount+' failed':' ✓');
@@ -422,32 +494,35 @@ function startAgeTimer(){
 
 function countdown(){
   const now=new Date();
-  // Times are in KL (UTC+8). Days left rounds up; under 24h shows TODAY; past events show DONE.
+  // Times are in KL (UTC+8). Whole days left (rounded down); under 24h shows TODAY; past events show DONE.
   const events=[
-    {id:'daysFedOct',  date:'2026-10-29T02:00:00+08:00', label:'FOMC Oct 28'},
-    {id:'daysMid',     date:'2026-11-03T00:00:00+08:00', label:'Midterms Nov 3'},
-    {id:'daysCPI2',    date:'2026-11-10T21:30:00+08:00', label:'CPI Nov 10'},
     {id:'daysMinutes', date:'2026-11-19T03:00:00+08:00', label:'FOMC Minutes'},
     {id:'daysBeige',   date:'2026-11-26T03:00:00+08:00', label:'Beige Book'},
     {id:'daysFed',     date:'2026-12-10T03:00:00+08:00', label:'FOMC Dec 9'},
+    {id:'daysCPI3',    date:'2026-12-10T21:30:00+08:00', label:'CPI Dec 10'},
   ];
-  let next=null,minDays=Infinity;
+  let next=null,minMs=Infinity;
   events.forEach(ev=>{
     const ms=new Date(ev.date)-now;
     const el=document.getElementById(ev.id);
     if(ms<0){ if(el)el.textContent='DONE'; return; }
     const d=Math.floor(ms/86400000);
     if(el)el.textContent=d===0?'TODAY':d;
-    if(d<minDays){minDays=d;next=ev;}
+    if(ms<minMs){minMs=ms;next=ev;}
   });
   const ec=document.getElementById('countdown');
-  if(ec&&next)ec.textContent=(minDays===0?'TODAY':'in '+minDays+'d')+' · '+next.label;
+  if(ec){
+    if(next){const d=Math.floor(minMs/86400000);ec.textContent=(d===0?'TODAY':'in '+d+'d')+' · '+next.label;}
+    else ec.textContent='No events set';
+  }
 }
 
+document.getElementById('refreshBtn').addEventListener('click',fetchAllPrices);
 countdown();
+setInterval(countdown,60000);
 fetchAllPrices();
 startAgeTimer();
 setInterval(fetchAllPrices,60000);
 </script>
-</body>
-</html>
+
+</body></html>
